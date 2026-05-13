@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidApplication(data) {
+      return data.fullName is string && data.fullName.size() <= 200 &&
+             data.email is string && data.email.size() <= 200 &&
+             data.category is string &&
+             data.portfolioLinks is string && data.portfolioLinks.size() <= 500 &&
+             data.statement is string && data.statement.size() <= 2000 &&
+             data.status == 'pending' &&
+             data.createdAt == request.time;
+    }
+
+    function isValidInquiry(data) {
+      return data.track in ['designer', 'sponsor', 'other'] &&
+             data.fullName is string && data.fullName.size() <= 200 &&
+             data.email is string && data.email.size() <= 200 &&
+             data.createdAt == request.time;
+    }
+
+    // Applications Collection
+    match /applications/{applicationId} {
+      allow create: if isValidApplication(incoming());
+      allow read: if false; // Only admins via console
+    }
+
+    // Inquiries Collection
+    match /inquiries/{inquiryId} {
+      allow create: if isValidInquiry(incoming());
+      allow read: if false; // Only admins via console
+    }
+  }
+}

@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Source Serif 4", ui-serif, Georgia, serif;
+  
+  --color-accent: #FF0066;
+  --color-dark: #0A0A0A;
+  --color-off-white: #F5F5F5;
+  --color-cyan-accent: #00F0FF;
+}
+
+@layer base {
+  body {
+    @apply bg-dark text-off-white font-serif antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans font-black uppercase tracking-tighter;
+  }
+}
+
+@layer utilities {
+  .text-stroke {
+    -webkit-text-stroke: 1px white;
+    color: transparent;
+  }
+  
+  .skew-btn {
+    @apply skew-x-[-10deg] hover:skew-x-0 transition-transform;
+  }
+  
+  .mag-grid {
+    @apply grid grid-cols-12 border-white/10;
+  }
+  
+  .vertical-label {
+    @apply -rotate-90 whitespace-nowrap text-[10px] tracking-[0.4em] uppercase text-white/40 font-bold;
+  }
+}
+
+.glitch-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.glitch-hover::after {
+  content: attr(data-hover);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: top 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.glitch-hover:hover::after {
+  top: 0;
+}

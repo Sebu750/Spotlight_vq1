@@ -1,0 +1,552 @@
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowRight, Trophy, Users, Zap, Calendar, ExternalLink, X, CircleCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import React, { useState, useContext, createContext } from 'react';
+import { db } from '../lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { ModalContext } from '../App';
+
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    operationType,
+    path
+  };
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
+
+const ApplicationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    const formData = new FormData(e.currentTarget);
+    
+    const data = {
+      fullName: formData.get('fullName'),
+      email: formData.get('email'),
+      category: formData.get('category'),
+      portfolioLinks: formData.get('portfolioLinks'),
+      statement: formData.get('statement'),
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    };
+
+    try {
+      await addDoc(collection(db, 'applications'), data);
+      setSubmitted(true);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'applications');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center px-6">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-dark/95 backdrop-blur-xl"
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="bg-zinc-900 border border-white/10 w-full max-w-2xl p-8 md:p-12 relative z-10 max-h-[90vh] overflow-y-auto custom-scrollbar"
+          >
+            <button onClick={onClose} className="absolute top-6 right-6 text-white/40 hover:text-white">
+              <X size={24} />
+            </button>
+
+            {!submitted ? (
+              <>
+                <h2 className="text-4xl font-black uppercase tracking-tighter mb-8 leading-none">DESIGNER <br /><span className="text-accent italic">REGISTRATION</span></h2>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-white/40">Full Name</label>
+                    <input required name="fullName" type="text" className="w-full bg-black border border-white/10 px-6 py-4 outline-none focus:border-accent text-white" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-white/40">Email Orbit</label>
+                    <input required name="email" type="email" className="w-full bg-black border border-white/10 px-6 py-4 outline-none focus:border-accent text-white" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-white/40">Category</label>
+                    <select name="category" className="w-full bg-black border border-white/10 px-6 py-4 outline-none focus:border-accent text-white uppercase text-xs tracking-widest">
+                      <option>Avant-Garde</option>
+                      <option>Sustainable</option>
+                      <option>Technical Gear</option>
+                      <option>Digital/Meta</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-white/40">Portfolio Links (IG, Website, Behance)</label>
+                    <textarea name="portfolioLinks" className="w-full bg-black border border-white/10 px-6 py-4 outline-none focus:border-accent text-white resize-none" rows={3} placeholder="https://..." />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-white/40">Personal Statement (Why Spotlight?)</label>
+                    <textarea name="statement" className="w-full bg-black border border-white/10 px-6 py-4 outline-none focus:border-accent text-white resize-none font-serif italic" rows={4} placeholder="Tell us your vision..." />
+                  </div>
+                  <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full bg-accent text-white py-6 font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                  >
+                    {loading ? "PROCESSING..." : "SUBMIT APPLICATION"}
+                  </button>
+                </form>
+              </>
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center mx-auto mb-8">
+                  <CircleCheck size={40} className="text-white" />
+                </div>
+                <h3 className="text-3xl font-black uppercase mb-4 tracking-tighter">SUBMITTED.</h3>
+                <p className="text-white/60 font-serif italic mb-10">Your application is in the queue. Our curators will review your transmission and reach out within 7 days.</p>
+                <button onClick={onClose} className="text-accent underline font-sans font-bold uppercase tracking-widest">Close Portal</button>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+const Landing = () => {
+  const { isModalOpen, setModalOpen } = useContext(ModalContext);
+
+  return (
+    <div className="overflow-hidden">
+      <ApplicationModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+      {/* Editorial Hero Section */}
+      <section className="relative min-h-screen flex flex-col pt-4">
+        {/* Decorative Blurs */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-accent blur-[140px] opacity-10 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-accent blur-[160px] opacity-5 pointer-events-none"></div>
+
+        <div className="flex-1 flex relative border-t border-white/10">
+          {/* Vertical Label */}
+          <div className="hidden lg:flex w-24 border-r border-white/10 items-center justify-center">
+            <span className="vertical-label">Designer Accelerator Vol. 04 — NY/LDN</span>
+          </div>
+
+          {/* Content Area */}
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12">
+            {/* Left: Massive Typography */}
+            <div className="lg:col-span-8 p-6 lg:p-16 flex flex-col justify-center relative">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className="text-accent text-[12px] font-black tracking-widest uppercase mb-6 flex items-center">
+                  <span className="w-12 h-[2px] bg-accent mr-4"></span>
+                  // Fall 2026 Applications Open June 1
+                </div>
+                <h1 className="text-[60px] md:text-[110px] leading-[0.85] font-black tracking-tighter uppercase mb-10">
+                  Stop <span className="text-stroke">interning.</span><br />
+                  Start competing.
+                </h1>
+                <p className="font-serif italic text-xl md:text-3xl text-white/70 max-w-xl leading-snug mb-12">
+                  Win a $50k grant and a direct mentorship with a CFDA designer. Three rounds. Ten finalists. One career-defining moment.
+                </p>
+                <div className="flex flex-col sm:row items-center space-y-6 sm:space-y-0 sm:space-x-10">
+                  <button 
+                    onClick={() => setModalOpen(true)}
+                    className="w-full sm:w-auto px-12 py-6 bg-accent text-white font-black uppercase tracking-tighter text-xl skew-btn shadow-[8px_8px_0px_0px_rgba(255,0,102,0.3)]"
+                  >
+                    Apply Now — $50
+                  </button>
+                  <div className="text-[11px] uppercase tracking-[0.3em] font-black border-b-2 border-white/30 pb-1 cursor-pointer hover:border-accent hover:text-accent transition-all">
+                    Download Prospectus
+                  </div>
+                </div>
+                <div className="mt-8">
+                  <button 
+                    onClick={() => setModalOpen(true)}
+                    className="inline-block bg-accent text-white px-10 py-5 font-sans font-black uppercase tracking-tighter text-lg skew-btn"
+                  >
+                    Join Waitlist — Applications Open June 1
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right: High Contrast Visual & Stats */}
+            <div className="lg:col-span-4 border-l border-white/10 bg-black/40 flex flex-col">
+              <div className="flex-1 relative overflow-hidden flex items-center justify-center p-8">
+                <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent z-10"></div>
+                <div className="h-full w-full bg-[radial-gradient(circle_at_50%_40%,_#333_0%,_#0A0A0A_70%)] flex items-center justify-center">
+                  {/* Visual Element */}
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="w-full aspect-[3/4] border border-white/20 relative group overflow-hidden"
+                  >
+                    <img 
+                      src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=2574&auto=format&fit=crop" 
+                      alt="Runway" 
+                      className="w-full h-full object-cover grayscale opacity-40 group-hover:scale-110 transition-transform duration-1000"
+                    />
+                    <div className="absolute inset-4 border border-accent/40 opacity-50 pointer-events-none"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center group-hover:scale-110 transition-transform">
+                        <div className="text-6xl font-black mb-2 tracking-tighter">$50,000</div>
+                        <div className="text-[10px] tracking-[0.4em] uppercase text-white/50 font-bold">Cash Prize Package</div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Social Proof Mini Band */}
+              <div className="p-10 border-t border-white/10 bg-black/60">
+                <div className="text-[9px] uppercase tracking-[0.3em] text-white/40 font-black mb-6 flex items-center">
+                   <Users className="w-3 h-3 mr-2" /> Supported by Industry Titans
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {['PREMIÈRE VISION', 'WWD MENTOR', 'LVMH ACCEL', 'CFDA PARTNER'].map(partner => (
+                    <div key={partner} className="h-10 border border-white/10 flex items-center justify-center grayscale text-[10px] font-black opacity-40 hover:opacity-100 transition-opacity">
+                      {partner}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Key Dates Footer Bar */}
+        <footer className="h-16 border-t border-white/10 flex items-center px-6 lg:px-16 justify-between bg-dark relative z-20">
+          <div className="flex items-center space-x-8 lg:space-x-12 overflow-x-auto no-scrollbar">
+            {[
+              { num: "01", label: "Applications", date: "June 01" },
+              { num: "02", label: "Deadline", date: "Aug 15" },
+              { num: "03", label: "Finalists", date: "Aug 30" },
+              { num: "04", label: "Grand Runway", date: "Sept 14" }
+            ].map((d, i) => (
+              <div key={i} className="flex items-center space-x-3 shrink-0">
+                <span className={`${i === 0 ? 'text-accent' : 'text-white/20'} font-black text-sm`}>{d.num}</span>
+                <span className="text-[10px] uppercase font-black text-white/60 tracking-wider whitespace-nowrap">
+                  {d.label}: <span className="text-white">{d.date}</span>
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="hidden sm:block text-[11px] uppercase font-black tracking-[0.2em] text-accent">
+            // Fall 2026 Cohort
+          </div>
+        </footer>
+      </section>
+
+      {/* Reusing existing sections but with theme polish */}
+      {/* Enhanced Process Section */}
+      <section className="py-32 px-6 border-t border-white/10 relative overflow-hidden bg-white/[0.01]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-8">
+            <div className="max-w-2xl">
+              <span className="text-[10px] font-sans font-black uppercase tracking-[0.5em] text-accent mb-4 block">The Blueprint</span>
+              <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8]">
+                FOUR STAGES <br />
+                <span className="text-stroke">TO GLORY.</span>
+              </h2>
+            </div>
+            <div className="text-right hidden md:block">
+              <p className="text-white/40 font-mono text-xs uppercase tracking-widest leading-relaxed max-w-[200px]">
+                Rigorous evaluation by CFDA titans and industry disruptors.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-l border-t border-white/10">
+            {[
+              { step: "01", title: "Transmission", subtitle: "Submit 3-5 Looks", desc: "No full collection needed. We're looking for your core DNA, your vision, and your disruptive potential." },
+              { step: "02", title: "The Cut", subtitle: "Top 50 Selected", desc: "Our global jury filters the noise. 50 designers move to the digital showcase for public and expert scoring." },
+              { step: "03", title: "Showdown", subtitle: "Live Finale NYC", desc: "The top 10 fly to New York. 48 hours of studio time, followed by a high-octane runway in Bushwick." },
+              { step: "04", title: "Ascension", subtitle: "Grant & Mentoring", desc: "Winner takes $50k and a year-long accelerator program to scale their vision into a global house." },
+            ].map((item, idx) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1, duration: 0.8 }}
+                className="p-10 border-r border-b border-white/10 group hover:bg-white/[0.03] transition-colors relative min-h-[400px] flex flex-col justify-between"
+              >
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
+                   <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
+                </div>
+                <span className="text-8xl font-sans font-black text-white/5 absolute top-4 left-4 group-hover:text-accent/10 transition-colors pointer-events-none">
+                  {item.step}
+                </span>
+                <div className="relative z-10 pt-12">
+                  <span className="text-[10px] font-mono text-accent mb-4 block font-bold tracking-widest uppercase">// STAGE_{item.step}</span>
+                  <h4 className="text-3xl font-black uppercase mb-2 tracking-tight group-hover:text-accent transition-colors">{item.title}</h4>
+                  <p className="text-white/40 text-[10px] uppercase font-bold tracking-[0.2em] mb-8">{item.subtitle}</p>
+                </div>
+                <div className="relative z-10">
+                  <p className="text-white/60 font-serif italic text-lg leading-relaxed group-hover:text-white/90 transition-colors">
+                    {item.desc}
+                  </p>
+                </div>
+                {/* Decorative scanning line */}
+                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent/30 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-700" />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Prize Package */}
+      <section className="py-32 px-6 bg-accent/5 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div>
+              <h2 className="text-5xl md:text-7xl font-black mb-12 leading-none">The <br /><span className="text-accent underline decoration-white/20">Accelerator</span> <br />Package</h2>
+              <div className="space-y-8">
+                {[
+                  { title: "Cash Grant", value: "$50,000 Equity-free funding" },
+                  { title: "Fabric Grant", value: "Exclusive access to Italian mills" },
+                  { title: "Mentorship", value: "1 year with CFDA mentors" },
+                  { title: "Marketplace", value: "Post-competition e-commerce slot" },
+                ].map((prize, idx) => (
+                  <div key={idx} className="flex items-start space-x-6 pb-6 border-b border-white/10">
+                    <Zap className="text-accent shrink-0 mt-1" size={24} />
+                    <div>
+                      <h5 className="font-sans font-bold text-lg mb-1">{prize.title}</h5>
+                      <p className="text-white/60">{prize.value}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="relative">
+              <div className="aspect-[4/5] bg-white/10 border border-white/20 p-4">
+                <img 
+                  src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=2600&auto=format&fit=crop" 
+                  alt="Designer working" 
+                  className="w-full h-full object-cover grayscale brightness-75"
+                />
+                <div className="absolute -bottom-10 -right-10 bg-accent p-12 hidden md:block">
+                  <span className="text-5xl font-black font-sans uppercase leading-none">Win <br />Your <br />Future</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Enhanced Sponsors / Brands Section */}
+      <section className="py-40 px-6 border-t border-white/10 bg-dark relative overflow-hidden">
+        <div className="absolute top-1/2 left-0 w-full h-[1px] bg-white/5 -translate-y-1/2 pointer-events-none" />
+        <div className="absolute top-0 left-1/2 w-[1px] h-full bg-white/5 -translate-x-1/2 pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-12"
+            >
+              <div className="inline-block px-4 py-1 border border-accent text-accent text-[10px] font-black uppercase tracking-[0.3em]">
+                Commercial Opportunities
+              </div>
+              <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8]">
+                PARTNER <br />
+                <span className="text-stroke">WITH US.</span>
+              </h2>
+              <p className="text-xl md:text-2xl font-serif italic text-white/50 max-w-lg leading-relaxed">
+                Connect your brand to the most disruptive talent pool in the industry. We don't just find designers; we build cultural powerhouses.
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8">
+                {[
+                  { title: "Talent Scouting", desc: "First look at 100+ vetted designers before they hit the global radar." },
+                  { title: "Strategic Placement", desc: "Integrate your materials or tools into the competition challenges." },
+                  { title: "Market Intelligence", desc: "Exclusive quarterly data reports on emerging Gen-Z design trends." },
+                  { title: "Global Reach", desc: "Live finale broadcast with 2M+ digital impressions per season." }
+                ].map((benefit, i) => (
+                  <div key={i} className="space-y-2 border-l border-accent/30 pl-6">
+                    <h4 className="font-sans font-black uppercase text-sm tracking-widest">{benefit.title}</h4>
+                    <p className="text-white/40 text-sm font-serif italic">{benefit.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-10">
+                <button className="bg-white text-dark px-10 py-5 font-sans font-black uppercase tracking-[0.2em] text-sm hover:bg-accent hover:text-white transition-all shadow-2xl skew-btn flex items-center group">
+                  Sponsorship Deck
+                  <ArrowRight className="ml-4 group-hover:translate-x-2 transition-transform" />
+                </button>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1 }}
+              className="relative aspect-square md:aspect-video lg:aspect-square bg-white/5 border border-white/10 group overflow-hidden"
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?q=80&w=2574&auto=format&fit=crop" 
+                alt="Corporate sponsorship" 
+                className="w-full h-full object-cover grayscale opacity-30 group-hover:scale-105 group-hover:opacity-50 transition-all duration-1000"
+              />
+              <div className="absolute inset-0 flex items-center justify-center p-12">
+                <div className="text-center">
+                  <span className="text-7xl md:text-9xl font-black text-white/10 group-hover:text-accent transition-colors select-none leading-none">B2B</span>
+                  <div className="mt-4 text-[10px] font-mono text-white/40 uppercase tracking-[0.4em] font-bold">
+                    // Disrupting the legacy loop
+                  </div>
+                </div>
+              </div>
+              <div className="absolute bottom-10 left-10 right-10 p-8 border border-white/10 bg-dark/80 backdrop-blur-md">
+                <blockquote className="font-serif italic text-white/70">
+                  "The most effective way to reach the next generation of consumers is to fund the designers they already trust."
+                </blockquote>
+                <div className="mt-4 flex items-center space-x-4">
+                  <div className="w-8 h-[1px] bg-accent" />
+                  <span className="text-[10px] uppercase font-black tracking-widest opacity-40">Head of VC, Millennial Ventures</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Past Winners */}
+      <section className="py-32 px-6 max-w-7xl mx-auto">
+        <h2 className="text-4xl md:text-6xl font-black mb-20">Alumni <span className="text-accent">—</span></h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {[
+            { 
+              name: "Elena Rossi", 
+              year: "S'24 Winner", 
+              impact: "Now stocked at Dover Street Market",
+              quote: "Spotlight didn't just give me money; they gave me a roadmap to global scale.",
+              image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2564&auto=format&fit=crop"
+            },
+            { 
+              name: "Jin Wu", 
+              year: "F'25 Finalist", 
+              impact: "Secured $200k in private seed funding",
+              quote: "The exposure is unmatched. I went from my dorm to a Manhattan studio in 6 months.",
+              image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2574&auto=format&fit=crop"
+            },
+            { 
+              name: "Amara Okoro", 
+              year: "S'25 Winner", 
+              impact: "Collection sold out in 14 minutes",
+              quote: "The mentorship focused on the business of fashion, which schools often ignore.",
+              image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=2574&auto=format&fit=crop"
+            }
+          ].map((winner, idx) => (
+            <div key={idx} className="group">
+              <div className="aspect-[3/4] overflow-hidden mb-8 relative">
+                <img 
+                  src={winner.image} 
+                  alt={winner.name} 
+                  className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                />
+                <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-all"></div>
+              </div>
+              <h4 className="text-2xl font-black uppercase mb-1">{winner.name}</h4>
+              <p className="text-accent font-sans font-bold text-sm tracking-widest mb-4">{winner.year}</p>
+              <p className="text-white/80 italic mb-6">"{winner.quote}"</p>
+              <div className="text-white/40 font-sans text-xs uppercase tracking-widest border-t border-white/10 pt-4">
+                Impact: {winner.impact}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Deadlines / Timeline */}
+      <section className="py-32 px-6 bg-white text-dark">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-5xl md:text-8xl font-black mb-20 text-center tracking-tighter">PROGRAM TIMELINE.</h2>
+          <div className="space-y-12 mb-20">
+            {[
+              { date: "JUNE 1, 2026", item: "Applications Open", desc: "Official launch of the submission portal for the Fall 2026 Founding Designers Program." },
+              { date: "AUGUST 15, 2026", item: "Submission Deadline", desc: "Final cutoff for all designer applications and portfolio reviews." },
+              { date: "AUGUST 30, 2026", item: "Finalists Announcement", desc: "Official selection announcement of the designers entering the production incubation phase." },
+              { date: "SEPT 14, 2026", item: "The Grand Runway", desc: "The live finale in Lahore, showcasing the completed collections and awarding season winners." },
+            ].map((d, idx) => (
+              <div key={idx} className="flex flex-col md:flex-row items-center justify-between border-b-2 border-dark/10 pb-12 gap-6 group">
+                <div className="text-center md:text-left flex-1">
+                  <span className="text-2xl md:text-4xl font-black font-sans tracking-tighter text-accent group-hover:scale-110 transition-transform inline-block origin-left">{d.date}</span>
+                  <p className="text-xl md:text-3xl font-black uppercase mt-1">{d.item}</p>
+                </div>
+                <div className="flex-1 max-w-xl">
+                  <p className="text-lg font-serif italic text-dark/60 leading-relaxed mb-6">{d.desc}</p>
+                  <button 
+                    onClick={() => setModalOpen(true)}
+                    className="bg-dark text-white px-8 py-4 font-sans font-black uppercase tracking-widest hover:bg-accent transition-colors text-xs"
+                  >
+                    Set Reminder
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-32 px-6 max-w-4xl mx-auto">
+        <h2 className="text-4xl md:text-6xl font-black mb-20 text-center italic font-serif lowercase tracking-normal">Common Questions</h2>
+        <div className="space-y-12">
+          {[
+            { q: "Do I need a full collection?", a: "No. For the first round, you only need to submit 3 to 5 looks (physical or high-fidelity renders)." },
+            { q: "Who owns my designs?", a: "You do. We license only for promotion. Any sales made via our marketplace are split 70/30 in your favor." },
+            { q: "Is it open to international designers?", a: "Yes. We pride ourselves on discovering global talent. If selected for the finale, we handle travel and visas." },
+            { q: "What if I'm self-taught?", a: "We value raw skill over resumes. If the work is revolutionary, you belong here." }
+          ].map((faq, idx) => (
+            <div key={idx} className="border-l-4 border-accent pl-8">
+              <h5 className="text-xl font-bold mb-4 uppercase">{faq.q}</h5>
+              <p className="text-white/60 text-lg leading-relaxed">{faq.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section id="apply-section" className="py-40 px-6 text-center bg-accent relative overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center opacity-10">
+          <span className="text-[30vw] font-black font-sans leading-none select-none">NOW</span>
+        </div>
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <h2 className="text-5xl md:text-9xl font-black text-white mb-12 leading-none tracking-tighter">YOUR BREAKOUT IS 3 CLICKS AWAY.</h2>
+          <p className="text-xl md:text-3xl text-white/90 font-serif italic mb-16">
+            Last season: 1,200 applicants for 50 spots. The countdown starts today.
+          </p>
+          <button className="bg-white text-accent px-12 py-6 font-sans font-black uppercase text-xl tracking-[0.2em] hover:scale-110 active:scale-95 transition-all shadow-2xl">
+            Submit Application
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Landing;
