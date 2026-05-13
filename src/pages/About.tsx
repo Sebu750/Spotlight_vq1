@@ -6,19 +6,19 @@ const About = () => {
   return (
     <div className="pt-24 min-h-screen">
       {/* Hero */}
-      <section className="px-6 py-20 bg-dark border-b border-white/10 overflow-hidden relative">
-        <div className="max-w-7xl mx-auto flex flex-col md:row items-end justify-between relative z-10">
+      <section className="px-6 py-12 md:py-20 bg-dark border-b border-white/10 overflow-hidden relative">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-end justify-between relative z-10 gap-8">
           <div className="max-w-3xl">
-            <h1 className="text-6xl md:text-9xl font-black mb-8 leading-[0.8] tracking-tighter">
+            <h1 className="text-5xl sm:text-7xl md:text-9xl font-black mb-8 leading-[1] md:leading-[0.8] tracking-tighter">
               THE <br /><span className="text-stroke">MANIFESTO.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/70 font-serif italic max-w-xl leading-relaxed">
+            <p className="text-lg md:text-2xl text-white/70 font-serif italic max-w-xl leading-relaxed">
               We didn't start Spotlight to follow patterns. We started it to break them. 
               The industry is gated; we provide the key.
             </p>
           </div>
-          <div className="hidden md:block">
-            <span className="text-[15rem] font-sans font-black text-white/5 select-none leading-none -mb-12">EST.2023</span>
+          <div className="hidden lg:block">
+            <span className="text-[10rem] xl:text-[15rem] font-sans font-black text-white/5 select-none leading-none -mb-12">EST.2023</span>
           </div>
         </div>
       </section>
@@ -106,13 +106,13 @@ const About = () => {
 
       {/* Press */}
       <section className="py-24 px-6 border-y border-white/10 bg-white/5">
-        <div className="max-w-7xl mx-auto flex flex-col md:row items-center justify-between gap-12">
-          <h3 className="text-3xl font-black tracking-tighter uppercase max-w-xs leading-none">AS FEATURED IN <span className="text-accent underline">THE PRESS</span></h3>
-          <div className="flex flex-wrap justify-center gap-12 md:gap-24 opacity-30">
-            <span className="text-2xl font-bold font-sans uppercase">Business of Fashion</span>
-            <span className="text-2xl font-bold font-sans uppercase">Vogue Business</span>
-            <span className="text-2xl font-bold font-sans uppercase">Forbes</span>
-            <span className="text-2xl font-bold font-sans uppercase">Wallpaper*</span>
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12">
+          <h3 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase max-w-xs leading-none text-center lg:text-left">AS FEATURED IN <span className="text-accent underline">THE PRESS</span></h3>
+          <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-12 md:gap-24 opacity-30">
+            <span className="text-xl sm:text-2xl font-bold font-sans uppercase">Business of Fashion</span>
+            <span className="text-xl sm:text-2xl font-bold font-sans uppercase">Vogue Business</span>
+            <span className="text-xl sm:text-2xl font-bold font-sans uppercase">Forbes</span>
+            <span className="text-xl sm:text-2xl font-bold font-sans uppercase">Wallpaper*</span>
           </div>
         </div>
       </section>

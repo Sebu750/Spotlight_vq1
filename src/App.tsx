@@ -5,13 +5,19 @@
 
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import Landing from './pages/Landing';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Blog from './pages/Blog';
 import ArticleDetail from './pages/ArticleDetail';
-import { Menu, X } from 'lucide-react';
-import { useState, useEffect, createContext, useContext } from 'react';
+import AdminLayout from './components/admin/AdminLayout';
+import Insights from './pages/admin/Insights';
+import Applications from './pages/admin/Applications';
+import Subscribers from './pages/admin/Subscribers';
+import Inquiries from './pages/admin/Inquiries';
+import { Menu, X, Shield } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
 
 // Context to share modal state
 export const ModalContext = createContext({
@@ -23,6 +29,8 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { setModalOpen } = useContext(ModalContext);
   const location = useLocation();
+
+  if (location.pathname.startsWith('/admin')) return null;
 
   const navLinks = [
     { name: 'About', path: '/about' },
@@ -64,30 +72,51 @@ const Navigation = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 50 }}
-            className="fixed inset-0 top-[77px] bg-dark z-[99] flex flex-col p-8 space-y-8 md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-dark z-[99] flex flex-col justify-center items-center p-8 space-y-8 md:hidden h-screen"
           >
-            {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                to={link.path} 
-                onClick={() => setIsOpen(false)}
-                className="font-sans font-black uppercase text-4xl tracking-tighter text-white border-b border-white/5 pb-4"
-              >
-                {link.name}
+            <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center border-b border-white/5">
+              <Link to="/" onClick={() => setIsOpen(false)} className="text-2xl font-sans font-black tracking-tighter text-white uppercase">
+                SPOTLIGHT<span className="text-accent">.</span>
               </Link>
-            ))}
-            <button 
-              onClick={() => {
-                setIsOpen(false);
-                setModalOpen(true);
-              }}
-              className="bg-accent text-white w-full text-center py-6 font-sans font-black uppercase tracking-[0.2em]"
-            >
-              Apply Now
-            </button>
+              <button className="text-white" onClick={() => setIsOpen(false)}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="flex flex-col items-center space-y-10 w-full">
+              {navLinks.map((link, idx) => (
+                <motion.div
+                  key={link.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="w-full text-center"
+                >
+                  <Link 
+                    to={link.path} 
+                    onClick={() => setIsOpen(false)}
+                    className="font-sans font-black uppercase text-5xl sm:text-6xl tracking-tighter text-white hover:text-accent transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
+              <motion.button 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: navLinks.length * 0.1 }}
+                onClick={() => {
+                  setIsOpen(false);
+                  setModalOpen(true);
+                }}
+                className="bg-accent text-white w-full max-w-xs py-6 font-sans font-black uppercase tracking-[0.2em] shadow-2xl skew-btn"
+              >
+                Apply Now
+              </motion.button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -95,8 +124,12 @@ const Navigation = () => {
   );
 };
 
-const Footer = () => (
-  <footer className="bg-black border-t border-white/10 pt-20 pb-10 px-6 mt-20">
+const Footer = () => {
+  const location = useLocation();
+  if (location.pathname.startsWith('/admin')) return null;
+
+  return (
+    <footer className="bg-black border-t border-white/10 pt-20 pb-10 px-6 mt-20">
     <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
       <div className="md:col-span-2">
         <h2 className="text-4xl font-sans font-black mb-6">SPOTLIGHT<span className="text-accent text-6xl">.</span></h2>
@@ -112,6 +145,7 @@ const Footer = () => (
           <li><Link to="/blog" className="hover:text-white">Articles</Link></li>
           <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
           <li><Link to="/apply" className="hover:text-white">Apply Now</Link></li>
+          <li><Link to="/admin" className="hover:text-white flex items-center gap-2 text-[10px] opacity-40 hover:opacity-100 transition-opacity mt-4"><Shield size={10} className="text-accent" /> Control Center</Link></li>
         </ul>
       </div>
       <div>
@@ -124,15 +158,16 @@ const Footer = () => (
         </ul>
       </div>
     </div>
-    <div className="max-w-7xl mx-auto border-t border-white/5 mt-20 pt-10 flex flex-col md:row items-center justify-between text-white/30 text-xs tracking-widest uppercase">
-      <p>© 2026 Spotlight Global. All rights reserved.</p>
-      <div className="flex space-x-6 mt-4 md:mt-0">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Entry</a>
+    <div className="max-w-7xl mx-auto border-t border-white/5 mt-20 pt-10 flex flex-col md:flex-row items-center justify-between text-white/30 text-xs tracking-widest uppercase gap-6">
+      <p className="text-center md:text-left">© 2026 Spotlight Global. All rights reserved.</p>
+      <div className="flex space-x-6">
+        <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+        <a href="#" className="hover:text-white transition-colors">Terms of Entry</a>
       </div>
     </div>
   </footer>
-);
+  );
+};
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -144,28 +179,50 @@ const ScrollToTop = () => {
   return null;
 };
 
+const PageWrapper = ({ children }: { children: ReactNode }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -10 }}
+    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+  >
+    {children}
+  </motion.div>
+);
+
 export default function App() {
   const [isModalOpen, setModalOpen] = useState(false);
+  const location = useLocation();
 
   return (
-    <Router>
-      <ModalContext.Provider value={{ isModalOpen, setModalOpen }}>
-        <ScrollToTop />
-        <div className="min-h-screen flex flex-col pt-16">
-          <Navigation />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:id" element={<ArticleDetail />} />
-              <Route path="/apply" element={<Landing />} />
+    <ModalContext.Provider value={{ isModalOpen, setModalOpen }}>
+      <ScrollToTop />
+      <div className="min-h-screen flex flex-col pt-16">
+        <Navigation />
+        <main className="flex-grow">
+          <AnimatePresence mode="wait">
+            {/* @ts-ignore - location and key are used for AnimatePresence transitions */}
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={<PageWrapper><Landing /></PageWrapper>} />
+              <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
+              <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
+              <Route path="/blog" element={<PageWrapper><Blog /></PageWrapper>} />
+              <Route path="/blog/:id" element={<PageWrapper><ArticleDetail /></PageWrapper>} />
+              <Route path="/apply" element={<PageWrapper><Landing /></PageWrapper>} />
+              
+              {/* Admin Portal */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                <Route path="dashboard" element={<Insights />} />
+                <Route path="applications" element={<Applications />} />
+                <Route path="subscribers" element={<Subscribers />} />
+                <Route path="inquiries" element={<Inquiries />} />
+              </Route>
             </Routes>
-          </main>
-          <Footer />
-        </div>
-      </ModalContext.Provider>
-    </Router>
+          </AnimatePresence>
+        </main>
+        <Footer />
+      </div>
+    </ModalContext.Provider>
   );
 }

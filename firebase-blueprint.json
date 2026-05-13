@@ -29,6 +29,17 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["track", "fullName", "email", "createdAt"]
+    },
+    "Subscriber": {
+      "title": "Subscriber",
+      "description": "Newsletter subscriber email",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "source": { "type": "string" }
+      },
+      "required": ["email", "createdAt"]
     }
   },
   "firestore": {
@@ -39,6 +50,10 @@
     "/inquiries/{inquiryId}": {
       "schema": "Inquiry",
       "description": "Contact form submissions"
+    },
+    "/subscribers/{subscriberId}": {
+      "schema": "Subscriber",
+      "description": "Newsletter subscriptions"
     }
   }
 }

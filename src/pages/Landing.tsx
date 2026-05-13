@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Trophy, Users, Zap, Calendar, ExternalLink, X, CircleCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import React, { useState, useContext, createContext } from 'react';
-import { db } from '../lib/firebase';
+import { db, auth } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ModalContext } from '../App';
 
@@ -15,12 +15,40 @@ enum OperationType {
   WRITE = 'write',
 }
 
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string | null;
+    email?: string | null;
+    emailVerified?: boolean | null;
+    isAnonymous?: boolean | null;
+    tenantId?: string | null;
+    providerInfo?: {
+      providerId?: string | null;
+      email?: string | null;
+    }[];
+  }
+}
+
 function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo = {
+  const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData?.map(provider => ({
+        providerId: provider.providerId,
+        email: provider.email,
+      })) || []
+    },
     operationType,
     path
-  };
+  }
   console.error('Firestore Error: ', JSON.stringify(errInfo));
   throw new Error(JSON.stringify(errInfo));
 }
@@ -38,6 +66,8 @@ const ApplicationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
       fullName: formData.get('fullName'),
       email: formData.get('email'),
       category: formData.get('category'),
+      city: formData.get('city'),
+      province: formData.get('province'),
       portfolioLinks: formData.get('portfolioLinks'),
       statement: formData.get('statement'),
       status: 'pending',
@@ -48,7 +78,7 @@ const ApplicationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
       await addDoc(collection(db, 'applications'), data);
       setSubmitted(true);
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, 'applications');
+      handleFirestoreError(error, OperationType.CREATE, 'applications');
     } finally {
       setLoading(false);
     }
@@ -87,8 +117,27 @@ const ApplicationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
                     <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-white/40">Email Orbit</label>
                     <input required name="email" type="email" className="w-full bg-black border border-white/10 px-6 py-4 outline-none focus:border-accent text-white" />
                   </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-white/40">Province</label>
+                      <select required name="province" className="w-full bg-black border border-white/10 px-6 py-4 outline-none focus:border-accent text-white uppercase text-xs tracking-widest">
+                        <option value="">Select Province</option>
+                        <option>Punjab</option>
+                        <option>Sindh</option>
+                        <option>Khyber Pakhtunkhwa</option>
+                        <option>Balochistan</option>
+                        <option>Gilgit-Baltistan</option>
+                        <option>Azad Jammu & Kashmir</option>
+                        <option>Islamabad Capital Territory</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-white/40">City</label>
+                      <input required name="city" type="text" placeholder="e.g. Lahore" className="w-full bg-black border border-white/10 px-6 py-4 outline-none focus:border-accent text-white" />
+                    </div>
+                  </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-white/40">Category</label>
+                    <label className="text-[10px] font-sans font-black uppercase tracking-widest text-white/40">Category</label>
                     <select name="category" className="w-full bg-black border border-white/10 px-6 py-4 outline-none focus:border-accent text-white uppercase text-xs tracking-widest">
                       <option>Avant-Garde</option>
                       <option>Sustainable</option>
@@ -114,13 +163,66 @@ const ApplicationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
                 </form>
               </>
             ) : (
-              <div className="text-center py-12">
-                <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center mx-auto mb-8">
-                  <CircleCheck size={40} className="text-white" />
+              <div className="text-center py-8">
+                <motion.div 
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="w-24 h-24 bg-accent/20 border-2 border-accent rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(255,0,102,0.3)]"
+                >
+                  <CircleCheck size={48} className="text-accent" />
+                </motion.div>
+                
+                <h3 className="text-4xl font-black uppercase mb-4 tracking-tighter leading-none">TRANSMISSION <br /><span className="text-accent">RECEIVED.</span></h3>
+                <p className="text-accent font-sans font-bold uppercase tracking-widest text-sm mb-6 animate-pulse">
+                  Thank you, your application has been successfully submitted.
+                </p>
+                <div className="text-[10px] font-mono text-white/40 uppercase tracking-[0.3em] font-bold mb-8">
+                  REF_ID: SP-{Math.random().toString(36).substring(7).toUpperCase()}
                 </div>
-                <h3 className="text-3xl font-black uppercase mb-4 tracking-tighter">SUBMITTED.</h3>
-                <p className="text-white/60 font-serif italic mb-10">Your application is in the queue. Our curators will review your transmission and reach out within 7 days.</p>
-                <button onClick={onClose} className="text-accent underline font-sans font-bold uppercase tracking-widest">Close Portal</button>
+                
+                <p className="text-white/60 font-serif italic mb-12 text-lg leading-relaxed max-w-lg mx-auto">
+                  Your vision has been logged into the Spotlight matrix. Our board of curators is currently reviewing the Fall '26 cohort.
+                </p>
+
+                <div className="bg-black/40 border border-white/5 p-8 mb-10 text-left">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mb-6 border-b border-white/10 pb-4">Next Phases</h4>
+                  <div className="space-y-6">
+                    {[
+                      { step: "01", title: "Archive Review", status: "Active", desc: "Curators evaluate your portfolio DNA." },
+                      { step: "02", title: "Shortlist Alpha", status: "Pending", desc: "Top 50 designers notified via email." },
+                      { step: "03", title: "Human Interview", status: "Waitlist", desc: "15min video call with the creative board." }
+                    ].map((step, i) => (
+                      <div key={i} className="flex gap-6">
+                        <span className="text-accent font-black text-xs font-mono">{step.step}</span>
+                        <div>
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="font-sans font-black uppercase text-xs tracking-widest">{step.title}</span>
+                            <span className={`text-[8px] px-2 py-0.5 border ${i === 0 ? 'border-accent text-accent animate-pulse' : 'border-white/20 text-white/20'} font-bold uppercase tracking-widest`}>
+                              {step.status}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-white/40 uppercase tracking-widest">{step.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  <Link 
+                    to="/blog" 
+                    onClick={onClose}
+                    className="w-full py-5 bg-white text-dark font-black uppercase tracking-[0.2em] text-xs hover:bg-accent hover:text-white transition-all"
+                  >
+                    Explore Chronicles
+                  </Link>
+                  <button 
+                    onClick={onClose} 
+                    className="text-white/40 hover:text-accent font-sans font-bold uppercase tracking-widest text-[10px] transition-colors"
+                  >
+                    Return to Void
+                  </button>
+                </div>
               </div>
             )}
           </motion.div>
@@ -137,80 +239,134 @@ const Landing = () => {
     <div className="overflow-hidden">
       <ApplicationModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
       {/* Editorial Hero Section */}
-      <section className="relative min-h-screen flex flex-col pt-4">
-        {/* Decorative Blurs */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-accent blur-[140px] opacity-10 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-accent blur-[160px] opacity-5 pointer-events-none"></div>
+      <section className="relative min-h-screen flex flex-col pt-4 bg-dark">
+        {/* Grain Overlay */}
+        <div className="absolute inset-0 z-50 pointer-events-none opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+        
+        {/* Decorative Grid Lines */}
+        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:100px_100px]"></div>
+        </div>
+
+        {/* Dynamic Blurs */}
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: [0.1, 0.15, 0.1]
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          className="absolute top-0 right-0 w-96 h-96 bg-accent blur-[140px] pointer-events-none"
+        ></motion.div>
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.1, 1],
+            opacity: [0.05, 0.08, 0.05]
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-accent blur-[180px] pointer-events-none"
+        ></motion.div>
 
         <div className="flex-1 flex relative border-t border-white/10">
           {/* Vertical Label */}
-          <div className="hidden lg:flex w-24 border-r border-white/10 items-center justify-center">
-            <span className="vertical-label">Designer Accelerator Vol. 04 — NY/LDN</span>
+          <div className="hidden lg:flex w-24 border-r border-white/10 items-center justify-center overflow-hidden">
+            <span className="vertical-label opacity-30 select-none">Pakistan Accelerator Vol. 01 — LHE/KHI</span>
           </div>
 
           {/* Content Area */}
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12">
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 relative z-10">
             {/* Left: Massive Typography */}
-            <div className="lg:col-span-8 p-6 lg:p-16 flex flex-col justify-center relative">
+            <div className="lg:col-span-8 p-6 sm:p-10 lg:p-16 flex flex-col justify-center relative">
               <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.15
+                    }
+                  }
+                }}
               >
-                <div className="text-accent text-[12px] font-black tracking-widest uppercase mb-6 flex items-center">
+                <motion.div 
+                  variants={{
+                    hidden: { opacity: 0, x: -20 },
+                    visible: { opacity: 1, x: 0 }
+                  }}
+                  className="text-accent text-[10px] sm:text-[12px] font-black tracking-widest uppercase mb-6 flex items-center"
+                >
                   <span className="w-12 h-[2px] bg-accent mr-4"></span>
                   // Fall 2026 Applications Open June 1
-                </div>
-                <h1 className="text-[60px] md:text-[110px] leading-[0.85] font-black tracking-tighter uppercase mb-10">
+                </motion.div>
+                
+                <motion.h1 
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 }
+                  }}
+                  className="text-[40px] sm:text-[60px] md:text-[80px] lg:text-[110px] leading-[1] md:leading-[0.85] font-black tracking-tighter uppercase mb-10"
+                >
                   Stop <span className="text-stroke">interning.</span><br />
                   Start competing.
-                </h1>
-                <p className="font-serif italic text-xl md:text-3xl text-white/70 max-w-xl leading-snug mb-12">
-                  Win a $50k grant and a direct mentorship with a CFDA designer. Three rounds. Ten finalists. One career-defining moment.
-                </p>
-                <div className="flex flex-col sm:row items-center space-y-6 sm:space-y-0 sm:space-x-10">
+                </motion.h1>
+                
+                <motion.p 
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 }
+                  }}
+                  className="font-serif italic text-lg sm:text-xl md:text-3xl text-white/70 max-w-xl leading-snug mb-12"
+                >
+                  Win a Rs. 5 Million grant and direct mentorship with industry titans. Three selection rounds. One breakout moment.
+                </motion.p>
+                
+                <motion.div 
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 }
+                  }}
+                  className="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-10"
+                >
                   <button 
                     onClick={() => setModalOpen(true)}
-                    className="w-full sm:w-auto px-12 py-6 bg-accent text-white font-black uppercase tracking-tighter text-xl skew-btn shadow-[8px_8px_0px_0px_rgba(255,0,102,0.3)]"
+                    className="w-full sm:w-auto px-12 py-6 bg-accent text-white font-black uppercase tracking-tighter text-xl skew-btn shadow-[8px_8px_0px_0px_rgba(255,0,102,0.3)] hover:-translate-y-1 active:translate-y-0 transition-transform"
                   >
-                    Apply Now — $50
+                    Apply Now — Rs. 5,000
                   </button>
                   <div className="text-[11px] uppercase tracking-[0.3em] font-black border-b-2 border-white/30 pb-1 cursor-pointer hover:border-accent hover:text-accent transition-all">
                     Download Prospectus
                   </div>
-                </div>
-                <div className="mt-8">
-                  <button 
-                    onClick={() => setModalOpen(true)}
-                    className="inline-block bg-accent text-white px-10 py-5 font-sans font-black uppercase tracking-tighter text-lg skew-btn"
-                  >
-                    Join Waitlist — Applications Open June 1
-                  </button>
-                </div>
+                </motion.div>
               </motion.div>
             </div>
 
             {/* Right: High Contrast Visual & Stats */}
-            <div className="lg:col-span-4 border-l border-white/10 bg-black/40 flex flex-col">
+            <div className="lg:col-span-4 border-l border-white/10 bg-black/40 flex flex-col relative overflow-hidden">
+              {/* Internal Grid Accents */}
+              <div className="absolute top-0 right-0 w-full h-[1px] bg-white/5"></div>
+              <div className="absolute bottom-0 left-0 w-[1px] h-full bg-white/5"></div>
+
               <div className="flex-1 relative overflow-hidden flex items-center justify-center p-8">
-                <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent z-10"></div>
-                <div className="h-full w-full bg-[radial-gradient(circle_at_50%_40%,_#333_0%,_#0A0A0A_70%)] flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent z-10"></div>
+                <div className="h-full w-full bg-[radial-gradient(circle_at_50%_40%,_rgba(40,40,40,1)_0%,_rgba(10,10,10,1)_70%)] flex items-center justify-center relative overflow-hidden">
+                  {/* Subtle Scanline Effect */}
+                  <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[size:100%_2px,3px_100%] z-0 pointer-events-none opacity-20"></div>
+
                   {/* Visual Element */}
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="w-full aspect-[3/4] border border-white/20 relative group overflow-hidden"
+                    className="w-full aspect-[3/4] border border-white/20 relative group overflow-hidden z-10 shadow-2xl"
                   >
                     <img 
                       src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=2574&auto=format&fit=crop" 
                       alt="Runway" 
-                      className="w-full h-full object-cover grayscale opacity-40 group-hover:scale-110 transition-transform duration-1000"
+                      className="w-full h-full object-cover grayscale opacity-30 group-hover:scale-110 group-hover:opacity-60 group-hover:grayscale-[0.5] transition-all duration-1000 ease-out"
                     />
-                    <div className="absolute inset-4 border border-accent/40 opacity-50 pointer-events-none"></div>
+                    <div className="absolute inset-4 border border-accent/30 opacity-40 group-hover:opacity-100 group-hover:border-accent transition-all pointer-events-none"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center group-hover:scale-110 transition-transform">
-                        <div className="text-6xl font-black mb-2 tracking-tighter">$50,000</div>
-                        <div className="text-[10px] tracking-[0.4em] uppercase text-white/50 font-bold">Cash Prize Package</div>
+                      <div className="text-center group-hover:scale-110 transition-transform px-4">
+                        <div className="text-4xl sm:text-5xl font-black mb-2 tracking-tighter drop-shadow-2xl">Rs. 5,000,000</div>
+                        <div className="text-[10px] tracking-[0.4em] uppercase text-white/50 font-bold mix-blend-difference">Venture Grant Fund</div>
                       </div>
                     </div>
                   </motion.div>
@@ -241,7 +397,7 @@ const Landing = () => {
               { num: "01", label: "Applications", date: "June 01" },
               { num: "02", label: "Deadline", date: "Aug 15" },
               { num: "03", label: "Finalists", date: "Aug 30" },
-              { num: "04", label: "Grand Runway", date: "Sept 14" }
+              { num: "04", label: "Karachi Runway", date: "Sept 14" }
             ].map((d, i) => (
               <div key={i} className="flex items-center space-x-3 shrink-0">
                 <span className={`${i === 0 ? 'text-accent' : 'text-white/20'} font-black text-sm`}>{d.num}</span>
@@ -261,16 +417,16 @@ const Landing = () => {
       {/* Enhanced Process Section */}
       <section className="py-32 px-6 border-t border-white/10 relative overflow-hidden bg-white/[0.01]">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-8">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16 md:mb-24 gap-8">
             <div className="max-w-2xl">
               <span className="text-[10px] font-sans font-black uppercase tracking-[0.5em] text-accent mb-4 block">The Blueprint</span>
-              <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8]">
+              <h2 className="text-4xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] md:leading-[0.8]">
                 FOUR STAGES <br />
                 <span className="text-stroke">TO GLORY.</span>
               </h2>
             </div>
-            <div className="text-right hidden md:block">
-              <p className="text-white/40 font-mono text-xs uppercase tracking-widest leading-relaxed max-w-[200px]">
+            <div className="text-left md:text-right hidden sm:block">
+              <p className="text-white/40 font-mono text-[10px] uppercase tracking-widest leading-relaxed max-w-[200px]">
                 Rigorous evaluation by CFDA titans and industry disruptors.
               </p>
             </div>
@@ -280,8 +436,8 @@ const Landing = () => {
             {[
               { step: "01", title: "Transmission", subtitle: "Submit 3-5 Looks", desc: "No full collection needed. We're looking for your core DNA, your vision, and your disruptive potential." },
               { step: "02", title: "The Cut", subtitle: "Top 50 Selected", desc: "Our global jury filters the noise. 50 designers move to the digital showcase for public and expert scoring." },
-              { step: "03", title: "Showdown", subtitle: "Live Finale NYC", desc: "The top 10 fly to New York. 48 hours of studio time, followed by a high-octane runway in Bushwick." },
-              { step: "04", title: "Ascension", subtitle: "Grant & Mentoring", desc: "Winner takes $50k and a year-long accelerator program to scale their vision into a global house." },
+              { step: "03", title: "Showdown", subtitle: "Live Finale KHI", desc: "The top 10 fly to Karachi. 48 hours of studio time, followed by a high-octane runway in the industrial heart of the city." },
+              { step: "04", title: "Ascension", subtitle: "Grant & Mentoring", desc: "Winner takes Rs. 5 Million and a year-long accelerator program to scale their vision into a global house." },
             ].map((item, idx) => (
               <motion.div 
                 key={idx}
@@ -323,10 +479,10 @@ const Landing = () => {
               <h2 className="text-5xl md:text-7xl font-black mb-12 leading-none">The <br /><span className="text-accent underline decoration-white/20">Accelerator</span> <br />Package</h2>
               <div className="space-y-8">
                 {[
-                  { title: "Cash Grant", value: "$50,000 Equity-free funding" },
-                  { title: "Fabric Grant", value: "Exclusive access to Italian mills" },
-                  { title: "Mentorship", value: "1 year with CFDA mentors" },
-                  { title: "Marketplace", value: "Post-competition e-commerce slot" },
+                  { title: "Venture Grant", value: "Rs. 5,000,000 Equity-free funding" },
+                  { title: "Production Studio", value: "Access to premium PK manufacturing" },
+                  { title: "Mentorship", value: "1 year with industry titans" },
+                  { title: "Retail Slot", value: "E-commerce placement on our Karachi portal" },
                 ].map((prize, idx) => (
                   <div key={idx} className="flex items-start space-x-6 pb-6 border-b border-white/10">
                     <Zap className="text-accent shrink-0 mt-1" size={24} />
@@ -482,32 +638,75 @@ const Landing = () => {
       </section>
 
       {/* Deadlines / Timeline */}
-      <section className="py-32 px-6 bg-white text-dark">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-5xl md:text-8xl font-black mb-20 text-center tracking-tighter">PROGRAM TIMELINE.</h2>
-          <div className="space-y-12 mb-20">
-            {[
-              { date: "JUNE 1, 2026", item: "Applications Open", desc: "Official launch of the submission portal for the Fall 2026 Founding Designers Program." },
-              { date: "AUGUST 15, 2026", item: "Submission Deadline", desc: "Final cutoff for all designer applications and portfolio reviews." },
-              { date: "AUGUST 30, 2026", item: "Finalists Announcement", desc: "Official selection announcement of the designers entering the production incubation phase." },
-              { date: "SEPT 14, 2026", item: "The Grand Runway", desc: "The live finale in Lahore, showcasing the completed collections and awarding season winners." },
-            ].map((d, idx) => (
-              <div key={idx} className="flex flex-col md:flex-row items-center justify-between border-b-2 border-dark/10 pb-12 gap-6 group">
-                <div className="text-center md:text-left flex-1">
-                  <span className="text-2xl md:text-4xl font-black font-sans tracking-tighter text-accent group-hover:scale-110 transition-transform inline-block origin-left">{d.date}</span>
-                  <p className="text-xl md:text-3xl font-black uppercase mt-1">{d.item}</p>
-                </div>
-                <div className="flex-1 max-w-xl">
-                  <p className="text-lg font-serif italic text-dark/60 leading-relaxed mb-6">{d.desc}</p>
-                  <button 
-                    onClick={() => setModalOpen(true)}
-                    className="bg-dark text-white px-8 py-4 font-sans font-black uppercase tracking-widest hover:bg-accent transition-colors text-xs"
-                  >
-                    Set Reminder
-                  </button>
-                </div>
-              </div>
-            ))}
+      <section className="py-40 px-6 bg-white text-dark relative overflow-hidden">
+        {/* Subtle Background Pattern */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-dark/[0.02] transform skew-x-[-12deg] pointer-events-none"></div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-32"
+          >
+            <span className="text-[10px] font-sans font-black uppercase tracking-[0.5em] text-accent mb-6 block">The Road to the Runway</span>
+            <h2 className="text-6xl md:text-9xl font-black tracking-tighter leading-none uppercase">FALL '26 <br /><span className="text-stroke" style={{ WebkitTextStroke: '1px #111', color: 'transparent' }}>TIMELINE.</span></h2>
+          </motion.div>
+
+          <div className="relative">
+            {/* Vertical Timeline Line */}
+            <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-dark/10 -translate-x-1/2 hidden lg:block"></div>
+
+            <div className="space-y-32">
+              {[
+                { date: "JUNE 1, 2026", item: "Applications Open", desc: "Official launch of the submission portal for the Fall 2026 Founding Designers Program." },
+                { date: "AUGUST 15, 2026", item: "Submission Deadline", desc: "Final cutoff for all designer applications and portfolio reviews." },
+                { date: "AUGUST 30, 2026", item: "Finalists Announcement", desc: "Official selection announcement of the designers entering the production incubation phase." },
+                { date: "SEPT 14, 2026", item: "The Grand Runway", desc: "The live finale in Lahore, showcasing the completed collections and awarding season winners." },
+              ].map((d, idx) => (
+                <motion.div 
+                  key={idx}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1, duration: 0.8 }}
+                  className={`flex flex-col lg:flex-row items-center gap-12 lg:gap-24 group ${idx % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}
+                >
+                  {/* Date Side */}
+                  <div className={`flex-1 w-full ${idx % 2 === 0 ? 'lg:text-right' : 'lg:text-left'}`}>
+                    <span className="text-accent font-mono text-sm font-bold tracking-[0.3em] block mb-4">// PHASE_0{idx + 1}</span>
+                    <span className="text-4xl md:text-6xl font-black font-sans tracking-tighter group-hover:text-accent transition-colors duration-500 leading-none">{d.date}</span>
+                    <h3 className="text-2xl md:text-4xl font-black uppercase mt-4 tracking-tight">{d.item}</h3>
+                  </div>
+
+                  {/* Marker */}
+                  <div className="relative flex items-center justify-center shrink-0">
+                    <div className="w-20 h-20 rounded-full border-2 border-dark/10 bg-white flex items-center justify-center group-hover:border-accent group-hover:scale-110 transition-all duration-500 z-10 shadow-2xl">
+                      <span className="text-sm font-black font-mono">0{idx + 1}</span>
+                    </div>
+                    {/* Pulsing ring on hover */}
+                    <div className="absolute inset-0 rounded-full bg-accent/20 animate-ping opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  </div>
+
+                  {/* Content Side */}
+                  <div className={`flex-1 w-full ${idx % 2 === 0 ? 'lg:text-left' : 'lg:text-right'}`}>
+                    <p className="text-lg md:text-xl font-serif italic text-dark/70 leading-relaxed max-w-md mx-auto lg:mx-0 group-hover:text-dark transition-colors">
+                      {d.desc}
+                    </p>
+                    <div className={`mt-10 ${idx % 2 === 0 ? 'lg:justify-start' : 'lg:justify-end'} flex justify-center`}>
+                      <button 
+                        onClick={() => setModalOpen(true)}
+                        className="group/btn relative px-10 py-5 overflow-hidden transition-transform active:scale-95"
+                      >
+                        <div className="absolute inset-0 bg-dark group-hover/btn:bg-accent transition-colors duration-500 skew-x-[-20deg]"></div>
+                        <span className="relative z-10 text-white font-sans font-black uppercase tracking-[0.2em] text-[10px]">Set Reminder</span>
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -531,16 +730,19 @@ const Landing = () => {
       </section>
 
       {/* Final CTA */}
-      <section id="apply-section" className="py-40 px-6 text-center bg-accent relative overflow-hidden">
+      <section id="apply-section" className="py-24 md:py-40 px-6 text-center bg-accent relative overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center opacity-10">
-          <span className="text-[30vw] font-black font-sans leading-none select-none">NOW</span>
+          <span className="text-[40vw] lg:text-[30vw] font-black font-sans leading-none select-none">NOW</span>
         </div>
         <div className="relative z-10 max-w-4xl mx-auto">
-          <h2 className="text-5xl md:text-9xl font-black text-white mb-12 leading-none tracking-tighter">YOUR BREAKOUT IS 3 CLICKS AWAY.</h2>
-          <p className="text-xl md:text-3xl text-white/90 font-serif italic mb-16">
+          <h2 className="text-4xl sm:text-5xl md:text-9xl font-black text-white mb-12 leading-[0.9] md:leading-none tracking-tighter uppercase font-sans">YOUR BREAKOUT IS 3 CLICKS AWAY.</h2>
+          <p className="text-lg md:text-3xl text-white/90 font-serif italic mb-16 px-4">
             Last season: 1,200 applicants for 50 spots. The countdown starts today.
           </p>
-          <button className="bg-white text-accent px-12 py-6 font-sans font-black uppercase text-xl tracking-[0.2em] hover:scale-110 active:scale-95 transition-all shadow-2xl">
+          <button 
+            onClick={() => setModalOpen(true)}
+            className="bg-white text-accent px-8 md:px-12 py-5 md:py-6 font-sans font-black uppercase text-lg md:text-xl tracking-[0.2em] hover:scale-110 active:scale-95 transition-all shadow-2xl"
+          >
             Submit Application
           </button>
         </div>

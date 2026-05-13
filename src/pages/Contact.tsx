@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, Instagram, Linkedin, MessageSquare, ArrowRight, CircleCheck, X } from 'lucide-react';
-import { db } from '../lib/firebase';
+import { db, auth } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 enum OperationType {
@@ -13,12 +13,40 @@ enum OperationType {
   WRITE = 'write',
 }
 
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string | null;
+    email?: string | null;
+    emailVerified?: boolean | null;
+    isAnonymous?: boolean | null;
+    tenantId?: string | null;
+    providerInfo?: {
+      providerId?: string | null;
+      email?: string | null;
+    }[];
+  }
+}
+
 function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo = {
+  const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData?.map(provider => ({
+        providerId: provider.providerId,
+        email: provider.email,
+      })) || []
+    },
     operationType,
     path
-  };
+  }
   console.error('Firestore Error: ', JSON.stringify(errInfo));
   throw new Error(JSON.stringify(errInfo));
 }
@@ -43,6 +71,8 @@ const Contact = () => {
       fullName: formData.get('fullName'),
       email: formData.get('email'),
       message: formData.get('message'),
+      province: formData.get('province') || null,
+      city: formData.get('city') || null,
       company: formData.get('company') || null,
       interests: interests.length > 0 ? interests : null,
       createdAt: serverTimestamp(),
@@ -52,7 +82,7 @@ const Contact = () => {
       await addDoc(collection(db, 'inquiries'), data);
       setSubmitted(true);
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, 'inquiries');
+      handleFirestoreError(error, OperationType.CREATE, 'inquiries');
     } finally {
       setLoading(false);
     }
@@ -60,13 +90,13 @@ const Contact = () => {
 
   return (
     <div className="pt-24 min-h-screen">
-      <section className="px-6 py-20 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
+      <section className="px-6 py-12 md:py-20 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
         {/* Left Column: Info */}
-        <div className="sticky top-32">
-          <h1 className="text-6xl md:text-9xl font-black mb-12 uppercase tracking-tighter leading-[0.8]">
+        <div className="lg:sticky lg:top-32">
+          <h1 className="text-5xl sm:text-7xl md:text-9xl font-black mb-12 uppercase tracking-tighter leading-[0.9] md:leading-[0.8]">
             LET'S <br /><span className="text-accent italic">CONNECT</span><span className="text-white">.</span>
           </h1>
-          <p className="text-xl md:text-2xl text-white/50 font-serif mb-20 italic max-w-sm leading-relaxed">
+          <p className="text-lg md:text-2xl text-white/50 font-serif mb-12 lg:mb-20 italic max-w-sm leading-relaxed">
             Whether you're breaking boundaries or funding those who do, we're listening.
           </p>
 
@@ -152,6 +182,7 @@ const Contact = () => {
                       <label className="text-xs font-sans font-bold uppercase tracking-widest text-white/40">Full Name</label>
                       <input 
                         required
+                        name="fullName"
                         type="text" 
                         className="w-full bg-dark border border-white/10 px-6 py-4 focus:border-accent outline-none text-white transition-all font-sans"
                         placeholder="ALEXANDER MCQUEEN"
@@ -161,6 +192,7 @@ const Contact = () => {
                       <label className="text-xs font-sans font-bold uppercase tracking-widest text-white/40">Email Orbit</label>
                       <input 
                         required
+                        name="email"
                         type="email" 
                         className="w-full bg-dark border border-white/10 px-6 py-4 focus:border-accent outline-none text-white transition-all font-sans"
                         placeholder="ALEX@STUDIO.COM"
@@ -174,6 +206,7 @@ const Contact = () => {
                         <label className="text-xs font-sans font-bold uppercase tracking-widest text-white/40">Company / Brand</label>
                         <input 
                           required
+                          name="company"
                           type="text" 
                           className="w-full bg-dark border border-white/10 px-6 py-4 focus:border-accent outline-none text-white transition-all font-sans"
                           placeholder="LVMH / INDITEX / ETC"
@@ -208,6 +241,30 @@ const Contact = () => {
                       </select>
                     </div>
                   )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <label className="text-xs font-sans font-bold uppercase tracking-widest text-white/40">Province</label>
+                      <select name="province" className="w-full bg-dark border border-white/10 px-6 py-4 focus:border-accent outline-none text-white transition-all font-sans uppercase text-sm tracking-widest">
+                        <option>Punjab</option>
+                        <option>Sindh</option>
+                        <option>KPK</option>
+                        <option>Balochistan</option>
+                        <option>Gilgit-Baltistan</option>
+                        <option>AJK</option>
+                        <option>Islamabad</option>
+                      </select>
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-xs font-sans font-bold uppercase tracking-widest text-white/40">City</label>
+                      <input 
+                        name="city"
+                        type="text" 
+                        className="w-full bg-dark border border-white/10 px-6 py-4 focus:border-accent outline-none text-white transition-all font-sans uppercase"
+                        placeholder="e.g. Lahore"
+                      />
+                    </div>
+                  </div>
 
                   <div className="space-y-2">
                     <label className="text-xs font-sans font-bold uppercase tracking-widest text-white/40">Your Transmission</label>
@@ -260,19 +317,18 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Address / Map Placeholder */}
-      <section className="py-32 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:row items-center justify-between border-t border-white/10 pt-20 gap-12">
+      <section className="py-24 md:py-32 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between border-t border-white/10 pt-20 gap-12">
           <div className="text-center md:text-left">
-            <h5 className="font-sans font-black uppercase text-accent mb-2">Global Operations</h5>
-            <p className="text-4xl md:text-6xl font-sans font-black tracking-tighter uppercase leading-[0.8]">NEW YORK <span className="text-white/20 italic">CITY</span></p>
-            <p className="text-white/40 font-serif text-lg mt-4 italic">120 Wooster St, SoHo, NY 10012</p>
+            <h5 className="font-sans font-black uppercase text-accent mb-2">Pakistan Operations</h5>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-sans font-black tracking-tighter uppercase leading-[1] md:leading-[0.8]">LAHORE <span className="text-white/20 italic">HQ</span></h2>
+            <p className="text-white/40 font-serif text-base sm:text-lg mt-4 italic">Gulberg III, Main Boulevard, Lahore 54000</p>
           </div>
-          <div className="flex gap-4 md:gap-8 opacity-20 hover:opacity-100 transition-opacity">
-            <span className="text-4xl font-black italic select-none">PARIS</span>
-            <span className="text-4xl font-black italic select-none">LONDON</span>
-            <span className="text-4xl font-black italic select-none">TOKYO</span>
-            <span className="text-4xl font-black italic select-none">MILAN</span>
+          <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-4 md:gap-x-12 opacity-20 hover:opacity-100 transition-opacity">
+            <span className="text-2xl sm:text-4xl font-black italic select-none text-accent">ISLAMABAD</span>
+            <span className="text-2xl sm:text-4xl font-black italic select-none">KARACHI</span>
+            <span className="text-2xl sm:text-4xl font-black italic select-none">FAISALABAD</span>
+            <span className="text-2xl sm:text-4xl font-black italic select-none">MULTAN</span>
           </div>
         </div>
       </section>
