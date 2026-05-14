@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==========================================
+    // 0. GLOBAL CATCH-ALL (DEFAULT DENY)
+    // ==========================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ==========================================
+    // 1. GLOBAL HELPERS
+    // ==========================================
+    function isSignedIn() { return request.auth != null; }
+    
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+
+    // IDENTITY: Master Identity Bypass
+    function isMaster() {
+      return isSignedIn() && 
+             request.auth.token.email == 'haseeb.49251@gmail.com';
+    }
+
+    // ROLE: Standard Admin Lookup
+    function isAdmin() {
+      return isMaster() || (
+        isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // ==========================================
+    // 2. ADMIN REGISTRY
+    // ==========================================
+    match /admins/{adminId} {
+      // allow get is used for initial auth check
+      allow get: if isSignedIn() && (request.auth.uid == adminId || isMaster());
+      
+      // Only the master can list or modify admins
+      allow list, write: if isMaster() && isValidId(adminId);
+    }
+
+    // ==========================================
+    // 3. SUBSCRIBERS
+    // ==========================================
+    function isValidSubscriber(data) {
+      return data.keys().hasAll(['email', 'createdAt']) &&
+             data.keys().size() <= 3 && // Allow optional status/meta
+             data.email is string && data.email.size() > 5 && data.email.size() <= 200 &&
+             data.email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$') &&
+             (data.createdAt == request.time || data.createdAt == null);
+    }
+
+    match /subscribers/{subscriberId} {
+      allow create: if isValidSubscriber(incoming());
+      allow get, list: if isAdmin();
+      allow delete: if isAdmin();
+      // Update rarely needed for subscribers but following patterns
+      allow update: if isAdmin() && isValidSubscriber(incoming());
+    }
+
+    // ==========================================
+    // 4. APPLICATIONS
+    // ==========================================
+    function isValidApplication(data, isCreate) {
+      return data.keys().hasAll(['fullName', 'email', 'category', 'createdAt', 'status', 'city', 'province', 'portfolioLinks', 'statement']) &&
+             data.fullName is string && data.fullName.size() > 0 && data.fullName.size() <= 200 &&
+             data.email is string && data.email.size() > 5 && data.email.size() <= 200 &&
+             data.email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$') &&
+             data.category is string && data.category.size() <= 100 &&
+             data.city is string && data.city.size() <= 100 && 
+             data.province is string && data.province.size() <= 100 &&
+             (data.portfolioLinks is string || data.portfolioLinks == null) &&
+             (data.statement is string || data.statement == null) &&
+             data.status in ['pending', 'reviewed', 'accepted', 'rejected'] &&
+             (data.createdAt == request.time || data.createdAt == null);
+    }
+
+    match /applications/{applicationId} {
+      allow create: if isValidApplication(incoming(), true);
+      allow get, list: if isAdmin();
+      allow update: if isAdmin() && isValidApplication(incoming(), false) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['status']) || isMaster()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ==========================================
+    // 5. INQUIRIES
+    // ==========================================
+    function isValidInquiry(data) {
+       return data.keys().hasAll(['fullName', 'email', 'message', 'createdAt']) &&
+              data.fullName is string && data.fullName.size() > 0 && data.fullName.size() <= 200 &&
+              data.email is string && data.email.size() > 5 && data.email.size() <= 200 &&
+              data.email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$') &&
+              data.message is string && data.message.size() > 0 && data.message.size() <= 5000 &&
+              (data.createdAt == request.time || data.createdAt == null);
+    }
+
+    match /inquiries/{inquiryId} {
+      allow create: if isValidInquiry(incoming());
+      allow get, list: if isAdmin();
+      allow delete: if isAdmin();
+    }
+  }
+}

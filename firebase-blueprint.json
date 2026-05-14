@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "Application": {
+      "title": "Application",
+      "description": "Designer entry for the fashion competition",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "category": { "type": "string" },
+        "portfolioLinks": { "type": "string" },
+        "statement": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["pending", "reviewed", "accepted", "rejected"] }
+      },
+      "required": ["fullName", "email", "category", "createdAt"]
+    },
+    "Inquiry": {
+      "title": "Inquiry",
+      "description": "General or business inquiry from the contact page",
+      "type": "object",
+      "properties": {
+        "track": { "type": "string", "enum": ["designer", "sponsor", "other"] },
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "company": { "type": "string" },
+        "interests": { "type": "array", "items": { "type": "string" } },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["track", "fullName", "email", "createdAt"]
+    },
+    "Subscriber": {
+      "title": "Subscriber",
+      "description": "Newsletter subscriber email",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "source": { "type": "string" }
+      },
+      "required": ["email", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/applications/{applicationId}": {
+      "schema": "Application",
+      "description": " डिजाइनर competition entries"
+    },
+    "/inquiries/{inquiryId}": {
+      "schema": "Inquiry",
+      "description": "Contact form submissions"
+    },
+    "/subscribers/{subscriberId}": {
+      "schema": "Subscriber",
+      "description": "Newsletter subscriptions"
+    }
+  }
+}

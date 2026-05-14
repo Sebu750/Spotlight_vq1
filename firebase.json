@@ -1,0 +1,8 @@
+{
+  "firestore": {
+    "database": "ai-studio-spotlight-e99c4910-7c86-4f1a-9f82-4dceabfaea91",
+    "location": "asia-southeast1",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}
