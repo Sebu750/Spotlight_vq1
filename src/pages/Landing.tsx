@@ -5,6 +5,10 @@ import React, { useState, useContext, createContext } from 'react';
 import { db, auth } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ModalContext } from '../App';
+import heroRunway from '../assets/hero-runway.jpg';
+import winner1 from '../assets/winner-1.jpg';
+import winner2 from '../assets/winner-2.jpg';
+import winner3 from '../assets/winner-3.jpg';
 
 enum OperationType {
   CREATE = 'create',
@@ -197,7 +201,7 @@ const ApplicationModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
                   <div className="space-y-6">
                     {[
                       { step: "01", title: "Archive Review", status: "Active", desc: "Curators evaluate your portfolio DNA." },
-                      { step: "02", title: "Shortlist Alpha", status: "Pending", desc: "Top 50 designers notified via email." },
+                      { step: "02", title: "Shortlist Alpha", status: "Pending", desc: "Top 100 designers notified via email." },
                       { step: "03", title: "Human Interview", status: "Waitlist", desc: "15min video call with the creative board." }
                     ].map((step, i) => (
                       <div key={i} className="flex gap-6">
@@ -324,7 +328,7 @@ const Landing = () => {
                   }}
                   className="font-serif italic text-lg sm:text-xl md:text-3xl text-white/70 max-w-xl leading-snug mb-12"
                 >
-                  Win a Rs. 5 Million grant and direct mentorship with industry titans. Three selection rounds. One breakout moment.
+                  Win a Rs. 300,000 grant and direct mentorship with industry titans. Three selection rounds. One breakout moment.
                 </motion.p>
                 
                 <motion.div 
@@ -366,14 +370,14 @@ const Landing = () => {
                     className="w-full aspect-[3/4] border border-white/20 relative group overflow-hidden z-10 shadow-2xl"
                   >
                     <img 
-                      src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=2574&auto=format&fit=crop" 
+                      src={heroRunway} 
                       alt="Runway" 
                       className="w-full h-full object-cover grayscale opacity-30 group-hover:scale-110 group-hover:opacity-60 group-hover:grayscale-[0.5] transition-all duration-1000 ease-out"
                     />
                     <div className="absolute inset-4 border border-accent/30 opacity-40 group-hover:opacity-100 group-hover:border-accent transition-all pointer-events-none"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center group-hover:scale-110 transition-transform px-4">
-                        <div className="text-4xl sm:text-5xl font-black mb-2 tracking-tighter drop-shadow-2xl">Rs. 5,000,000</div>
+                        <div className="text-4xl sm:text-5xl font-black mb-2 tracking-tighter drop-shadow-2xl">Rs. 300,000</div>
                         <div className="text-[10px] tracking-[0.4em] uppercase text-white/50 font-bold mix-blend-difference">Venture Grant Fund</div>
                       </div>
                     </div>
@@ -416,7 +420,7 @@ const Landing = () => {
             ))}
           </div>
           <div className="hidden sm:block text-[11px] uppercase font-black tracking-[0.2em] text-accent">
-            // Fall 2026 Cohort
+            // Fall 2026 
           </div>
         </footer>
       </section>
@@ -608,21 +612,21 @@ const Landing = () => {
               year: "S'24 Winner", 
               impact: "Now stocked at Dover Street Market",
               quote: "Spotlight didn't just give me money; they gave me a roadmap to global scale.",
-              image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2564&auto=format&fit=crop"
+              image: winner1
             },
             { 
               name: "Jin Wu", 
               year: "F'25 Finalist", 
               impact: "Secured $200k in private seed funding",
               quote: "The exposure is unmatched. I went from my dorm to a Manhattan studio in 6 months.",
-              image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2574&auto=format&fit=crop"
+              image: winner2
             },
             { 
               name: "Amara Okoro", 
               year: "S'25 Winner", 
               impact: "Collection sold out in 14 minutes",
               quote: "The mentorship focused on the business of fashion, which schools often ignore.",
-              image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=2574&auto=format&fit=crop"
+              image: winner3
             }
           ].map((winner, idx) => (
             <div key={idx} className="group">
