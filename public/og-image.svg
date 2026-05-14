@@ -1,0 +1,45 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A0A0A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Accent line -->
+  <rect x="0" y="0" width="8" height="630" fill="#FF0066"/>
+  
+  <!-- Main title -->
+  <text x="80" y="180" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#FFFFFF" letter-spacing="-2">
+    SPOTLIGHT X ADORZIA
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="80" y="270" font-family="Arial, sans-serif" font-size="48" font-weight="900" fill="#FF0066" letter-spacing="-1">
+    Fall 2026 Fashion Competition
+  </text>
+  
+  <!-- Location -->
+  <text x="80" y="340" font-family="Arial, sans-serif" font-size="36" font-weight="700" fill="#FFFFFF" opacity="0.8">
+    Lahore, Pakistan
+  </text>
+  
+  <!-- Divider -->
+  <rect x="80" y="380" width="200" height="4" fill="#FF0066"/>
+  
+  <!-- Description -->
+  <text x="80" y="440" font-family="Arial, sans-serif" font-size="28" font-weight="400" fill="#FFFFFF" opacity="0.7">
+    Empowering emerging fashion designers
+  </text>
+  <text x="80" y="480" font-family="Arial, sans-serif" font-size="28" font-weight="400" fill="#FFFFFF" opacity="0.7">
+    PKR 300,000 Cash Prize + Production Funding
+  </text>
+  
+  <!-- CTA -->
+  <text x="80" y="560" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#FF0066" letter-spacing="2">
+    APPLICATIONS OPEN JUNE 1, 2026
+  </text>
+</svg>

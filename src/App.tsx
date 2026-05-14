@@ -5,19 +5,21 @@
 
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import React, { useState, useEffect, createContext, useContext, ReactNode, Suspense, lazy } from 'react';
 import Landing from './pages/Landing';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Blog from './pages/Blog';
 import ArticleDetail from './pages/ArticleDetail';
-import AdminLayout from './components/admin/AdminLayout';
-import Insights from './pages/admin/Insights';
-import Applications from './pages/admin/Applications';
-import Subscribers from './pages/admin/Subscribers';
-import Inquiries from './pages/admin/Inquiries';
-import { Menu, X, Shield } from 'lucide-react';
+import { Menu, X, Shield, Loader2 } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
+
+// Lazy load admin components for code splitting
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const Insights = lazy(() => import('./pages/admin/Insights'));
+const Applications = lazy(() => import('./pages/admin/Applications'));
+const Subscribers = lazy(() => import('./pages/admin/Subscribers'));
+const Inquiries = lazy(() => import('./pages/admin/Inquiries'));
 
 // Context to share modal state
 export const ModalContext = createContext({
@@ -145,16 +147,15 @@ const Footer = () => {
           <li><Link to="/blog" className="hover:text-white">Articles</Link></li>
           <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
           <li><Link to="/apply" className="hover:text-white">Apply Now</Link></li>
-          <li><Link to="/admin" className="hover:text-white flex items-center gap-2 text-[10px] opacity-40 hover:opacity-100 transition-opacity mt-4"><Shield size={10} className="text-accent" /> Control Center</Link></li>
         </ul>
       </div>
       <div>
         <h4 className="font-sans font-bold mb-6 text-accent">Connect</h4>
         <ul className="space-y-4 text-white/80">
-          <li><a href="#" className="hover:text-white">Instagram</a></li>
-          <li><a href="#" className="hover:text-white">TikTok</a></li>
-          <li><a href="#" className="hover:text-white">LinkedIn</a></li>
-          <li><a href="#" className="hover:text-white">Discord</a></li>
+          <li><a href="https://instagram.com/adorziaofficial" target="_blank" rel="noopener noreferrer" className="hover:text-white">Instagram</a></li>
+          <li><a href="https://tiktok.com/@adorziaofficial" target="_blank" rel="noopener noreferrer" className="hover:text-white">TikTok</a></li>
+          <li><a href="https://linkedin.com/company/adorzia" target="_blank" rel="noopener noreferrer" className="hover:text-white">LinkedIn</a></li>
+          <li><a href="https://wa.me/923059064253" target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp</a></li>
         </ul>
       </div>
     </div>
@@ -211,12 +212,55 @@ export default function App() {
               <Route path="/apply" element={<PageWrapper><Landing /></PageWrapper>} />
               
               {/* Admin Portal */}
-              <Route path="/admin" element={<AdminLayout />}>
+              <Route path="/admin" element={
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center bg-dark">
+                    <div className="text-center">
+                      <Loader2 className="text-accent animate-spin mx-auto mb-4" size={48} />
+                      <p className="text-white/40 font-sans font-black uppercase text-[10px] tracking-widest">Loading Admin Panel...</p>
+                    </div>
+                  </div>
+                }>
+                  <AdminLayout />
+                </Suspense>
+              }>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
-                <Route path="dashboard" element={<Insights />} />
-                <Route path="applications" element={<Applications />} />
-                <Route path="subscribers" element={<Subscribers />} />
-                <Route path="inquiries" element={<Inquiries />} />
+                <Route path="dashboard" element={
+                  <Suspense fallback={
+                    <div className="flex items-center justify-center py-32">
+                      <Loader2 className="text-accent animate-spin" size={32} />
+                    </div>
+                  }>
+                    <Insights />
+                  </Suspense>
+                } />
+                <Route path="applications" element={
+                  <Suspense fallback={
+                    <div className="flex items-center justify-center py-32">
+                      <Loader2 className="text-accent animate-spin" size={32} />
+                    </div>
+                  }>
+                    <Applications />
+                  </Suspense>
+                } />
+                <Route path="subscribers" element={
+                  <Suspense fallback={
+                    <div className="flex items-center justify-center py-32">
+                      <Loader2 className="text-accent animate-spin" size={32} />
+                    </div>
+                  }>
+                    <Subscribers />
+                  </Suspense>
+                } />
+                <Route path="inquiries" element={
+                  <Suspense fallback={
+                    <div className="flex items-center justify-center py-32">
+                      <Loader2 className="text-accent animate-spin" size={32} />
+                    </div>
+                  }>
+                    <Inquiries />
+                  </Suspense>
+                } />
               </Route>
             </Routes>
           </AnimatePresence>

@@ -107,7 +107,7 @@ const Blog = () => {
                   className="group flex flex-col md:flex-row gap-10 items-start"
                 >
                 <div className="w-full md:w-2/5 aspect-[4/3] bg-white/5 overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 relative">
-                  <img src={article.image} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                  <img src={article.image} alt={article.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" loading="lazy" />
                   <div className="absolute top-4 left-4 bg-dark text-[10px] font-sans font-black uppercase tracking-widest px-3 py-1 shadow-2xl">
                     {article.category}
                   </div>
@@ -157,7 +157,7 @@ const Blog = () => {
                   {articles.slice(0, 2).map((item) => (
                     <Link key={item.id} to={`/blog/${item.id}`} className="group flex gap-4 items-start">
                       <div className="w-20 aspect-square overflow-hidden grayscale group-hover:grayscale-0 transition-all shrink-0 bg-white/5 border border-white/5">
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
                       </div>
                       <div>
                         <span className="text-[8px] font-sans font-black text-accent uppercase tracking-widest mb-1 block">{item.category}</span>
@@ -216,6 +216,7 @@ const Blog = () => {
                   src="https://images.unsplash.com/photo-1544441892-0b291d646b9a?q=80&w=2670&auto=format&fit=crop" 
                   className="w-full h-full object-cover grayscale brightness-[0.3] group-hover:brightness-50 group-hover:scale-110 transition-all duration-1000" 
                   alt="Runway"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
                   <span className="text-[10px] font-sans font-black text-accent uppercase tracking-[0.4em] mb-4">SEASON 04</span>

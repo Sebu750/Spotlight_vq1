@@ -79,8 +79,8 @@ const Subscribers = () => {
     <div className="space-y-12">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <h2 className="text-[10px] font-sans font-black uppercase tracking-[0.5em] text-accent mb-2">Network Expansion</h2>
-          <h1 className="text-5xl font-black uppercase tracking-tighter italic">Subscribers.</h1>
+          <h2 className="text-[10px] font-sans font-black tracking-[0.5em] text-accent mb-2">Newsletter subscribers</h2>
+          <h1 className="text-5xl font-black tracking-tighter">Subscribers</h1>
         </div>
         <div className="flex gap-4 w-full md:w-96 relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={16} />
@@ -88,7 +88,7 @@ const Subscribers = () => {
             type="text" 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="FILTER BY EMAIL / SOURCE..." 
+            placeholder="Filter by email or source..." 
             className="w-full bg-white/5 border border-white/10 pl-12 pr-4 py-4 font-sans text-[10px] tracking-widest uppercase font-bold outline-none focus:border-accent transition-all"
           />
         </div>
@@ -98,12 +98,12 @@ const Subscribers = () => {
         {fetching ? (
           <div className="py-32 flex flex-col items-center justify-center gap-4">
              <Loader2 className="text-accent animate-spin" size={40} />
-             <span className="text-[10px] font-sans font-black uppercase tracking-[0.3em] text-white/40 italic">Decoding Stream...</span>
+             <span className="text-[10px] font-sans font-black tracking-[0.3em] text-white/40">Loading data...</span>
           </div>
         ) : error ? (
           <div className="py-32 flex flex-col items-center justify-center text-center px-6">
             <AlertCircle className="text-red-500 mb-4" size={40} />
-            <h3 className="text-xl font-black uppercase tracking-tighter mb-2">Security Intercept</h3>
+            <h3 className="text-xl font-black tracking-tighter mb-2">Connection error</h3>
             <p className="text-white/60 font-serif italic max-w-sm">{error}</p>
           </div>
         ) : filteredData.length === 0 ? (
@@ -111,17 +111,17 @@ const Subscribers = () => {
             <div className="w-16 h-16 border border-white/5 rounded-full flex items-center justify-center mb-6">
               <Mail size={32} />
             </div>
-            <p className="font-sans font-black uppercase tracking-widest text-[10px]">No active signals on this frequency.</p>
+            <p className="font-sans font-black tracking-widest text-[10px]">No subscribers found.</p>
           </div>
         ) : (
           <div className="overflow-x-auto min-h-[500px]">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/10 bg-white/[0.02]">
-                  <th className="px-8 py-6 text-[10px] font-sans font-black uppercase tracking-widest text-white/40">Transmission Address</th>
-                  <th className="px-8 py-6 text-[10px] font-sans font-black uppercase tracking-widest text-white/40">Origin Point</th>
-                  <th className="px-8 py-6 text-[10px] font-sans font-black uppercase tracking-widest text-white/40">Registered</th>
-                  <th className="px-8 py-6 text-[10px] font-sans font-black uppercase tracking-widest text-white/40 text-right">Ops</th>
+                  <th className="px-8 py-6 text-[10px] font-sans font-black tracking-widest text-white/40">Email</th>
+                  <th className="px-8 py-6 text-[10px] font-sans font-black tracking-widest text-white/40">Source</th>
+                  <th className="px-8 py-6 text-[10px] font-sans font-black tracking-widest text-white/40">Subscribed</th>
+                  <th className="px-8 py-6 text-[10px] font-sans font-black tracking-widest text-white/40 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">

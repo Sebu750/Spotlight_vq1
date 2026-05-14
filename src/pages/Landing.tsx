@@ -328,7 +328,7 @@ const Landing = () => {
                   }}
                   className="font-serif italic text-lg sm:text-xl md:text-3xl text-white/70 max-w-xl leading-snug mb-12"
                 >
-                  Win a Rs. 300,000 grant and direct mentorship with industry titans. Three selection rounds. One breakout moment.
+                 The lineup comprises a distinguished jury of Pakistan's most celebrated couturiers and fashion trailblazers.
                 </motion.p>
                 
                 <motion.div 
@@ -342,7 +342,7 @@ const Landing = () => {
                     onClick={() => setModalOpen(true)}
                     className="w-full sm:w-auto px-12 py-6 bg-accent text-white font-black uppercase tracking-tighter text-xl skew-btn shadow-[8px_8px_0px_0px_rgba(255,0,102,0.3)] hover:-translate-y-1 active:translate-y-0 transition-transform"
                   >
-                    Apply Now — Rs. 5,000
+                    Apply Now 
                   </button>
                   <div className="text-[11px] uppercase tracking-[0.3em] font-black border-b-2 border-white/30 pb-1 cursor-pointer hover:border-accent hover:text-accent transition-all">
                     Download Prospectus
@@ -372,6 +372,8 @@ const Landing = () => {
                     <img 
                       src={heroRunway} 
                       alt="Runway" 
+                      loading="eager"
+                      fetchPriority="high"
                       className="w-full h-full object-cover grayscale opacity-30 group-hover:scale-110 group-hover:opacity-60 group-hover:grayscale-[0.5] transition-all duration-1000 ease-out"
                     />
                     <div className="absolute inset-4 border border-accent/30 opacity-40 group-hover:opacity-100 group-hover:border-accent transition-all pointer-events-none"></div>
@@ -406,11 +408,11 @@ const Landing = () => {
         <footer className="h-16 border-t border-white/10 flex items-center px-6 lg:px-16 justify-between bg-dark relative z-20">
           <div className="flex items-center space-x-8 lg:space-x-12 overflow-x-auto no-scrollbar">
             {[
-              { num: "01", label: "Applications", date: "June 01" },
-              { num: "02", label: "Deadline", date: "Aug 15" },
-              { num: "03", label: "Finalists", date: "Aug 30" },
-              { num: "04", label: "Karachi Runway", date: "Sept 14" }
-            ].map((d, i) => (
+  { num: "01", label: "The Visionary Call", date: "June 01" },
+  { num: "02", label: "The Absolute Cutoff", date: "July 15" },
+  { num: "03", label: "The Jury Convene", date: "Aug 10" },
+  { num: "04", label: "The Grand Runway", date: "Sept 14" }
+].map((d, i) => (
               <div key={i} className="flex items-center space-x-3 shrink-0">
                 <span className={`${i === 0 ? 'text-accent' : 'text-white/20'} font-black text-sm`}>{d.num}</span>
                 <span className="text-[10px] uppercase font-black text-white/60 tracking-wider whitespace-nowrap">
@@ -439,18 +441,38 @@ const Landing = () => {
             </div>
             <div className="text-left md:text-right hidden sm:block">
               <p className="text-white/40 font-mono text-[10px] uppercase tracking-widest leading-relaxed max-w-[200px]">
-                Rigorous evaluation by CFDA titans and industry disruptors.
+               Rigorous evaluation by globally recognized fashion authorities, visionary creatives, and next-generation industry innovators.
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-l border-t border-white/10">
             {[
-              { step: "01", title: "Transmission", subtitle: "Submit 3-5 Looks", desc: "No full collection needed. We're looking for your core DNA, your vision, and your disruptive potential." },
-              { step: "02", title: "The Cut", subtitle: "Top 50 Selected", desc: "Our global jury filters the noise. 50 designers move to the digital showcase for public and expert scoring." },
-              { step: "03", title: "Showdown", subtitle: "Live Finale KHI", desc: "The top 10 fly to Karachi. 48 hours of studio time, followed by a high-octane runway in the industrial heart of the city." },
-              { step: "04", title: "Ascension", subtitle: "Grant & Mentoring", desc: "Winner takes Rs. 5 Million and a year-long accelerator program to scale their vision into a global house." },
-            ].map((item, idx) => (
+  { 
+    step: "01", 
+    title: "The Submission", 
+    subtitle: "Digital Applications Open", 
+    desc: "Submit your PDF portfolio showcasing 3-5 looks. We are scouting for your core DNA and your ability to master Western silhouettes with Eastern artistry." 
+  },
+  { 
+    step: "02", 
+    title: "The Industrial Cut", 
+    subtitle: "Jury Selection & Vetting", 
+    desc: "A panel of Industry Creative Directors evaluates the Top 100 to select the Top 10 finalists based on technical excellence and luxury standards." 
+  },
+  { 
+    step: "03", 
+    title: "The Spotlight", 
+    subtitle: "Live Finale | Sept 14", 
+    desc: "The Top 10 designers showcase their vision on the Karachi runway. The winner is decided by key industry stakeholders, influencers, and the public." 
+  },
+  { 
+    step: "04", 
+    title: "The Legacy", 
+    subtitle: "Grant & Market Launch", 
+    desc: "The winner secures a PKR 300K grant. All Top 10 finalists enter a funded production and marketplace partnership spanning 3 consecutive fashion cycles." 
+  },
+].map((item, idx) => (
               <motion.div 
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
@@ -488,14 +510,21 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div>
-              <h2 className="text-5xl md:text-7xl font-black mb-12 leading-none">The <br /><span className="text-accent underline decoration-white/20">Accelerator</span> <br />Package</h2>
+<h2 className="text-5xl md:text-7xl font-black mb-12 leading-none">
+  The Prize <br />
+  <span className="text-accent underline decoration-white/20">Isn't Just</span> <br />
+  Cash.
+</h2>
               <div className="space-y-8">
                 {[
-                  { title: "Venture Grant", value: "Rs. 5,000,000 Equity-free funding" },
-                  { title: "Production Studio", value: "Access to premium PK manufacturing" },
-                  { title: "Mentorship", value: "1 year with industry titans" },
-                  { title: "Retail Slot", value: "E-commerce placement on our Karachi portal" },
-                ].map((prize, idx) => (
+  { title: "Cash Prize", value: "PKR 300K awarded to the Top 1 winner" },
+  { title: "Ownership", value: "100% ownership of your brand, trademarks, and IP" },
+  { title: "3 Collection Cycles", value: "Full production and manufacturing funding for Top 10 designers" },
+  { title: "Profit Share", value: "50% net profit split after recovery of production and marketing costs" },
+  { title: "Global Launch", value: "Featured collection drop on the ADORZIA digital marketplace" },
+  { title: "Runway Showcase", value: "Professional Fall 2026 showcase for Top 10 finalists" },
+]
+.map((prize, idx) => (
                   <div key={idx} className="flex items-start space-x-6 pb-6 border-b border-white/10">
                     <Zap className="text-accent shrink-0 mt-1" size={24} />
                     <div>
@@ -511,6 +540,7 @@ const Landing = () => {
                 <img 
                   src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=2600&auto=format&fit=crop" 
                   alt="Designer working" 
+                  loading="lazy"
                   className="w-full h-full object-cover grayscale brightness-75"
                 />
                 <div className="absolute -bottom-10 -right-10 bg-accent p-12 hidden md:block">
@@ -548,11 +578,11 @@ const Landing = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8">
                 {[
-                  { title: "Talent Scouting", desc: "First look at 100+ vetted designers before they hit the global radar." },
-                  { title: "Strategic Placement", desc: "Integrate your materials or tools into the competition challenges." },
-                  { title: "Market Intelligence", desc: "Exclusive quarterly data reports on emerging Gen-Z design trends." },
-                  { title: "Global Reach", desc: "Live finale broadcast with 2M+ digital impressions per season." }
-                ].map((benefit, i) => (
+  { title: "Early Access", desc: "Connect with Pakistan's most promising emerging designers before the global market discovers them." },
+  { title: "Brand Integration", desc: "Place your materials, technology, or services directly into designer collections and runway showcases." },
+  { title: "Industry Positioning", desc: "Align your brand with the future of luxury fashion, craftsmanship, and creative innovation." },
+  { title: "Global Visibility", desc: "Reach an international fashion audience through digital campaigns, editorial storytelling, and the Fall 2026 showcase." }
+].map((benefit, i) => (
                   <div key={i} className="space-y-2 border-l border-accent/30 pl-6">
                     <h4 className="font-sans font-black uppercase text-sm tracking-widest">{benefit.title}</h4>
                     <p className="text-white/40 text-sm font-serif italic">{benefit.desc}</p>
@@ -578,6 +608,7 @@ const Landing = () => {
               <img 
                 src="https://images.unsplash.com/photo-1551232864-3f0890e580d9?q=80&w=2574&auto=format&fit=crop" 
                 alt="Corporate sponsorship" 
+                loading="lazy"
                 className="w-full h-full object-cover grayscale opacity-30 group-hover:scale-105 group-hover:opacity-50 transition-all duration-1000"
               />
               <div className="absolute inset-0 flex items-center justify-center p-12">
@@ -594,7 +625,7 @@ const Landing = () => {
                 </blockquote>
                 <div className="mt-4 flex items-center space-x-4">
                   <div className="w-8 h-[1px] bg-accent" />
-                  <span className="text-[10px] uppercase font-black tracking-widest opacity-40">Head of VC, Millennial Ventures</span>
+                  <span className="text-[10px] uppercase font-black tracking-widest opacity-40">Founder, Adorzia Fashion Co</span>
                 </div>
               </div>
             </motion.div>
@@ -604,28 +635,28 @@ const Landing = () => {
 
       {/* Past Winners */}
       <section className="py-32 px-6 max-w-7xl mx-auto">
-        <h2 className="text-4xl md:text-6xl font-black mb-20">Alumni <span className="text-accent">—</span></h2>
+        <h2 className="text-4xl md:text-6xl font-black mb-20">Founding Team <span className="text-accent">—</span></h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
             { 
-              name: "Elena Rossi", 
-              year: "S'24 Winner", 
-              impact: "Now stocked at Dover Street Market",
-              quote: "Spotlight didn't just give me money; they gave me a roadmap to global scale.",
+              name: "TBD", 
+              year: "Creative Director", 
+              impact: "Curating the fusion of Eastern artistry and Western silhouette",
+              quote: "Our mission is to translate traditional heritage into a modern, industrial language that resonates on a global stage.",
               image: winner1
             },
             { 
-              name: "Jin Wu", 
-              year: "F'25 Finalist", 
-              impact: "Secured $200k in private seed funding",
-              quote: "The exposure is unmatched. I went from my dorm to a Manhattan studio in 6 months.",
+              name: "TBD", 
+              year: "Operations & Logistics Lead", 
+              impact: "Streamlining end-to-end production for the managed marketplace",
+              quote: "By handling the complex logistics of manufacturing, we empower designers to focus entirely on their creative evolution.",
               image: winner2
             },
             { 
-              name: "Amara Okoro", 
-              year: "S'25 Winner", 
-              impact: "Collection sold out in 14 minutes",
-              quote: "The mentorship focused on the business of fashion, which schools often ignore.",
+              name: "TBD", 
+              year: "Director of Brand Growth", 
+              impact: "Elevating local narratives into premium global brand identities",
+              quote: "Our goal is to ensure every designer we touch doesn't just launch a collection, but builds a legacy that commands international respect.",
               image: winner3
             }
           ].map((winner, idx) => (
@@ -634,6 +665,7 @@ const Landing = () => {
                 <img 
                   src={winner.image} 
                   alt={winner.name} 
+                  loading="lazy"
                   className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
                 />
                 <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-all"></div>
@@ -642,7 +674,7 @@ const Landing = () => {
               <p className="text-accent font-sans font-bold text-sm tracking-widest mb-4">{winner.year}</p>
               <p className="text-white/80 italic mb-6">"{winner.quote}"</p>
               <div className="text-white/40 font-sans text-xs uppercase tracking-widest border-t border-white/10 pt-4">
-                Impact: {winner.impact}
+                Mandate: {winner.impact}
               </div>
             </div>
           ))}
@@ -728,11 +760,35 @@ const Landing = () => {
         <h2 className="text-4xl md:text-6xl font-black mb-20 text-center italic font-serif lowercase tracking-normal">Common Questions</h2>
         <div className="space-y-12">
           {[
-            { q: "Do I need a full collection?", a: "No. For the first round, you only need to submit 3 to 5 looks (physical or high-fidelity renders)." },
-            { q: "Who owns my designs?", a: "You do. We license only for promotion. Any sales made via our marketplace are split 70/30 in your favor." },
-            { q: "Is it open to international designers?", a: "Yes. We pride ourselves on discovering global talent. If selected for the finale, we handle travel and visas." },
-            { q: "What if I'm self-taught?", a: "We value raw skill over resumes. If the work is revolutionary, you belong here." }
-          ].map((faq, idx) => (
+  { 
+    q: "Do I need to submit a full collection?", 
+    a: "No. Your initial application only requires your portfolio and design vision. We judge your creative point of view, not your current inventory." 
+  },
+  { 
+    q: "Who owns the rights to my brand?", 
+    a: "You do. You retain 100% legal ownership of your trademarks, IP, and designs. ADORZIA is an investment and launch partner, not an owner." 
+  },
+  { 
+    q: "Is the production funding a loan?", 
+    a: "No. For the Top 10 finalists, ADORZIA covers the manufacturing and production costs as an investment in your brand's market entry." 
+  },
+  { 
+    q: "What happens if I don't win the grand prize?", 
+    a: "All Top 10 finalists receive professional runway exposure, a year of mentorship, and their collections are launched on our digital marketplace." 
+  },
+  { 
+    q: "How does the profit sharing work?", 
+    a: "For the funded collections, we use a 50/50 net profit split after production and marketing costs are recovered, ensuring you earn while you grow." 
+  },
+  { 
+    q: "Who is eligible to apply?", 
+    a: "We are open to final-year fashion students, recent alumni, and independent designers across Pakistan who specialize in slow fashion and heritage craft." 
+  },
+  { 
+    q: "What is the first season theme?", 
+    a: "The debut theme is 'Industrial Heritage'—a call to merge Pakistan's deep-rooted artisanal craftsmanship with modern, utilitarian silhouettes." 
+  }
+].map((faq, idx) => (
             <div key={idx} className="border-l-4 border-accent pl-8">
               <h5 className="text-xl font-bold mb-4 uppercase">{faq.q}</h5>
               <p className="text-white/60 text-lg leading-relaxed">{faq.a}</p>
@@ -749,8 +805,7 @@ const Landing = () => {
         <div className="relative z-10 max-w-4xl mx-auto">
           <h2 className="text-4xl sm:text-5xl md:text-9xl font-black text-white mb-12 leading-[0.9] md:leading-none tracking-tighter uppercase font-sans">YOUR BREAKOUT IS 3 CLICKS AWAY.</h2>
           <p className="text-lg md:text-3xl text-white/90 font-serif italic mb-16 px-4">
-            Last season: 1,200 applicants for 50 spots. The countdown starts today.
-          </p>
+  Inaugural edition: Applications open for the first-ever ADORZIA Spotlight. The countdown starts today.          </p>
           <button 
             onClick={() => setModalOpen(true)}
             className="bg-white text-accent px-8 md:px-12 py-5 md:py-6 font-sans font-black uppercase text-lg md:text-xl tracking-[0.2em] hover:scale-110 active:scale-95 transition-all shadow-2xl"

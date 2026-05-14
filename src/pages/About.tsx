@@ -1,6 +1,15 @@
 import { motion } from 'motion/react';
 import { Target, Globe, Zap, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import founder from '../assets/founder.png';
+import team1 from '../assets/team1.jpg';
+import partner1 from '../assets/s.png';
+import partner2 from '../assets/o.png';
+import partner3 from '../assets/l.png';
+import partner4 from '../assets/i.png';
+import partner5 from '../assets/g.png';
+
+
 
 const About = () => {
   return (
@@ -27,25 +36,23 @@ const About = () => {
       <section className="py-32 px-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
         <div className="aspect-[4/5] bg-white/5 border border-white/10 overflow-hidden grayscale">
           <img 
-            src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2670&auto=format&fit=crop" 
-            alt="Fashion studio" 
+            src={founder} 
+            alt="founder" 
+            loading="lazy"
             className="w-full h-full object-cover"
           />
         </div>
         <div>
           <h2 className="text-4xl md:text-6xl font-black mb-12">FOUNDING <span className="text-accent underline">STORY</span></h2>
-          <p className="text-xl text-white/70 leading-relaxed font-serif mb-8">
-            The fashion industry is notoriously difficult to penetrate. Access to capital, 
-            manufacturing resources, and distribution networks often depends more on 
-            who you know than what you can create. We saw a gap where raw brilliance 
-            was being suffocated by bureaucracy and nepotism.
-          </p>
-          <p className="text-xl text-white/70 leading-relaxed font-serif">
-            Spotlight was born from a simple, rebellious premise: Talent should be the only 
-            requirement for entry. We combined the speed of a tech accelerator with the 
-            prestige of a heritage competition to create a platform that doesn't just 
-            award prizes—it builds sustainable businesses.
-          </p>
+         
+<p className="text-xl text-white/70 leading-relaxed font-serif mb-8">
+  ADORZIA Spotlight is being built as a founding platform for designers who are ready to move beyond visibility and into ownership. This is not just a competition, it is an infrastructure for emerging fashion brands to be funded, produced, and scaled with real industry backing.
+</p>
+
+<p className="text-xl text-white/70 leading-relaxed font-serif">
+  From first sketch to market-ready brand, we exist to give designers control over their IP, access to manufacturing and capital, and a direct pathway to market, without compromising creative independence. This is where future fashion founders are formed, not just selected.
+</p>
+
         </div>
       </section>
 
@@ -58,7 +65,7 @@ const About = () => {
               { icon: <Target />, title: "Democratizing Access", desc: "Your background shouldn't limit your potential. We fund merit, not resumes." },
               { icon: <Zap />, title: "Raw Talent First", desc: "A great idea in a sketchbook is worth more than a bad one in silk." },
               { icon: <ShieldCheck />, title: "Non-Negotiable Ethics", desc: "Sustainability and fair labor aren't perks; they're the standard." },
-              { icon: <Globe />, title: "Global Perspective", desc: "Fashion has no borders. We search every continent for the next icon." }
+              { icon: <Globe />, title: "Global Perspective", desc: "Focused on discovering and elevating Pakistan’s next generation of designers." }
             ].map((v, i) => (
               <div key={i} className="p-10 border border-dark/10 group hover:bg-dark hover:text-white transition-all duration-500 flex flex-col items-center text-center">
                 <div className="mb-8 p-4 rounded-full bg-accent text-white group-hover:scale-110 transition-transform">
@@ -77,9 +84,9 @@ const About = () => {
         <h2 className="text-4xl md:text-6xl font-black mb-20">THE <span className="text-accent">CORE</span></h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {[
-            { name: "Julian Valez", role: "Founder & Creative Director", quirk: "Ex-Vogue editor who still hand-writes thank you notes", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574&auto=format&fit=crop" },
-            { name: "Sarah Chen", role: "Head of Strategy", quirk: "Can identify any fabric weave by touch alone", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576&auto=format&fit=crop" },
-            { name: "Marcus Thorne", role: "Venture Lead", quirk: "Unhealthily obsessed with 90's brutalist architecture", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2574&auto=format&fit=crop" }
+            { name: "TBD", role: "Co-Founder & Creative Director", quirk: "Building ADORZIA as Pakistan's first designer accelerator focused on ownership, production, and scale.", img: team1 },
+            { name: "TBD", role: "Head of Strategy", quirk: "Focused on shaping systems that turn Pakistan's emerging designers into market-ready brands.", img: team1 },
+            { name: "TBD", role: "Venture Lead", quirk: "Backing design talent across Pakistan with capital, mentorship, and production access.", img: team1 }
           ].map((member, i) => (
             <motion.div 
               key={i}
@@ -90,6 +97,7 @@ const About = () => {
                 <img 
                   src={member.img} 
                   alt={member.name} 
+                  loading="lazy"
                   className="w-full h-full object-cover grayscale opacity-80 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-500"
                 />
                 <div className="absolute top-4 right-4 bg-accent text-white p-2 text-[10px] uppercase font-black tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
@@ -104,18 +112,35 @@ const About = () => {
         </div>
       </section>
 
-      {/* Press */}
-      <section className="py-24 px-6 border-y border-white/10 bg-white/5">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12">
-          <h3 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase max-w-xs leading-none text-center lg:text-left">AS FEATURED IN <span className="text-accent underline">THE PRESS</span></h3>
-          <div className="flex flex-wrap justify-center items-center gap-8 sm:gap-12 md:gap-24 opacity-30">
-            <span className="text-xl sm:text-2xl font-bold font-sans uppercase">Business of Fashion</span>
-            <span className="text-xl sm:text-2xl font-bold font-sans uppercase">Vogue Business</span>
-            <span className="text-xl sm:text-2xl font-bold font-sans uppercase">Forbes</span>
-            <span className="text-xl sm:text-2xl font-bold font-sans uppercase">Wallpaper*</span>
-          </div>
+     {/* Partners */}
+<section className="py-24 px-6 border-y border-white/10 bg-white/5 overflow-hidden">
+  <div className="max-w-7xl mx-auto">
+    
+    <h3 className="text-2xl sm:text-3xl font-black tracking-tighter uppercase max-w-xs leading-none text-center mx-auto mb-16">
+      OUR <span className="text-accent underline">PARTNERS</span>
+    </h3>
+
+    <div className="relative">
+      <div className="flex animate-marquee">
+        <div className="flex items-center gap-16 sm:gap-20 md:gap-24 shrink-0">
+          <img src={partner1} alt="Partner 1" className="h-12 sm:h-14 md:h-16 object-contain opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+          <img src={partner2} alt="Partner 2" className="h-12 sm:h-14 md:h-16 object-contain opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+          <img src={partner3} alt="Partner 3" className="h-12 sm:h-14 md:h-16 object-contain opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+          <img src={partner4} alt="Partner 4" className="h-12 sm:h-14 md:h-16 object-contain opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+          <img src={partner5} alt="Partner 5" className="h-12 sm:h-14 md:h-16 object-contain opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
         </div>
-      </section>
+        <div className="flex items-center gap-16 sm:gap-20 md:gap-24 shrink-0">
+          <img src={partner1} alt="Partner 1" className="h-12 sm:h-14 md:h-16 object-contain opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+          <img src={partner2} alt="Partner 2" className="h-12 sm:h-14 md:h-16 object-contain opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+          <img src={partner3} alt="Partner 3" className="h-12 sm:h-14 md:h-16 object-contain opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+          <img src={partner4} alt="Partner 4" className="h-12 sm:h-14 md:h-16 object-contain opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+          <img src={partner5} alt="Partner 5" className="h-12 sm:h-14 md:h-16 object-contain opacity-60 hover:opacity-100 transition-opacity duration-300" loading="lazy" />
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
 
       {/* Final CTA */}
       <section className="py-32 px-6 text-center">

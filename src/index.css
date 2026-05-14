@@ -38,6 +38,19 @@
   .vertical-label {
     @apply -rotate-90 whitespace-nowrap text-[10px] tracking-[0.4em] uppercase text-white/40 font-bold;
   }
+  
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  
+  .animate-marquee {
+    animation: marquee 20s linear infinite;
+  }
 }
 
 .glitch-hover {

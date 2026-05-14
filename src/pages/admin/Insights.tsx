@@ -99,19 +99,19 @@ const Insights = () => {
       {/* Welcome & Time */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <h2 className="text-[10px] font-sans font-black uppercase tracking-[0.5em] text-accent mb-2">Vanguard Pakistan Command</h2>
-          <h1 className="text-5xl font-black uppercase tracking-tighter italic">Intelligence Briefing.</h1>
+          <h2 className="text-[10px] font-sans font-black tracking-[0.5em] text-accent mb-2">Dashboard overview</h2>
+          <h1 className="text-5xl font-black tracking-tighter">Analytics</h1>
         </div>
         <div className="flex gap-4">
           <div className="px-4 py-2 bg-white/5 border border-white/10 flex flex-col items-end">
-            <span className="text-[8px] font-sans font-bold text-white/40 uppercase tracking-widest">Islamabad Sync</span>
+            <span className="text-[8px] font-sans font-bold text-white/40 tracking-widest">Local time</span>
             <span className="text-[11px] font-sans font-black text-white">
               {new Date().toLocaleTimeString('en-PK', { timeZone: 'Asia/Karachi' })} PKT
             </span>
           </div>
           <div className="px-4 py-2 bg-accent text-white flex flex-col items-end shadow-lg shadow-accent/20">
-            <span className="text-[8px] font-sans font-bold text-white/60 uppercase tracking-widest">Operational Status</span>
-            <span className="text-[11px] font-sans font-black">ACTIVE</span>
+            <span className="text-[8px] font-sans font-bold text-white/60 tracking-widest">Status</span>
+            <span className="text-[11px] font-sans font-black">Active</span>
           </div>
         </div>
       </div>
@@ -119,10 +119,10 @@ const Insights = () => {
       {/* Hero Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Total Applications', value: stats.apps, trend: '+12.5%', icon: Users, color: 'text-accent' },
+          { label: 'Total applications', value: stats.apps, trend: '+12.5%', icon: Users, color: 'text-accent' },
           { label: 'Subscribers', value: stats.subs, trend: '+5.2%', icon: Mail, color: 'text-white' },
-          { label: 'Active Inquiries', value: stats.inquiries, trend: 'STABLE', icon: MessageSquare, color: 'text-accent' },
-          { label: 'System Uptime', value: '99.98%', trend: 'OPTIMAL', icon: Zap, color: 'text-white' },
+          { label: 'Active inquiries', value: stats.inquiries, trend: 'Stable', icon: MessageSquare, color: 'text-accent' },
+          { label: 'System uptime', value: '99.98%', trend: 'Optimal', icon: Zap, color: 'text-white' },
         ].map((stat, idx) => (
           <motion.div 
             key={idx}
@@ -155,7 +155,7 @@ const Insights = () => {
         <div className="lg:col-span-8 p-8 bg-white/5 border border-white/10">
           <div className="flex justify-between items-center mb-10">
             <div>
-              <h3 className="text-sm font-sans font-black uppercase tracking-[0.2em]">Regional Application Index</h3>
+              <h3 className="text-sm font-sans font-black tracking-[0.2em]">Application trends</h3>
               <p className="text-[10px] font-serif italic text-white/40">7-day tracking of Pakistan submissions</p>
             </div>
           </div>
@@ -201,7 +201,7 @@ const Insights = () => {
 
         {/* Global Distribution */}
         <div className="lg:col-span-4 p-8 bg-white/5 border border-white/10 flex flex-col">
-          <h3 className="text-sm font-sans font-black uppercase tracking-[0.2em] mb-10">Regional Spread</h3>
+          <h3 className="text-sm font-sans font-black tracking-[0.2em] mb-10">Regional distribution</h3>
           <div className="flex-1 space-y-8">
             {provinceData.map((item, idx) => (
               <div key={idx} className="space-y-3">
@@ -224,7 +224,7 @@ const Insights = () => {
           <div className="mt-12 pt-8 border-t border-white/10">
             <div className="flex items-center gap-3">
                <MapPin className="text-accent" size={16} />
-               <span className="text-[9px] font-sans font-bold uppercase tracking-widest text-white/40">Tracking all Pakistan Nodes</span>
+               <span className="text-[9px] font-sans font-bold tracking-widest text-white/40">Tracking all regions</span>
             </div>
           </div>
         </div>
@@ -233,7 +233,7 @@ const Insights = () => {
       {/* Bottom Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="p-8 bg-white/5 border border-white/10">
-          <h4 className="text-[10px] font-sans font-black uppercase tracking-widest text-accent mb-6">Recent Pakistan Intercepts</h4>
+          <h4 className="text-[10px] font-sans font-black tracking-widest text-accent mb-6">Recent applications</h4>
           <div className="space-y-6">
             {stats.recent.map((app, i) => (
               <div key={app.id} className="flex gap-4 items-center group cursor-pointer">
@@ -245,34 +245,34 @@ const Insights = () => {
               </div>
             ))}
             {stats.recent.length === 0 && (
-              <p className="text-[10px] font-sans font-black text-white/10 uppercase tracking-widest">Awaiting live feed...</p>
+              <p className="text-[10px] font-sans font-black text-white/10 tracking-widest">Waiting for data...</p>
             )}
           </div>
         </div>
 
         <div className="p-8 bg-white/5 border border-white/10">
-          <h4 className="text-[10px] font-sans font-black uppercase tracking-widest text-accent mb-6">Local Network Health</h4>
+          <h4 className="text-[10px] font-sans font-black tracking-widest text-accent mb-6">System status</h4>
           <div className="space-y-4">
             <div className="flex justify-between items-center text-[10px] font-sans font-bold uppercase tracking-widest">
-              <span className="text-white/40">PK Server Latency</span>
+              <span className="text-white/40">Server latency</span>
               <span className="text-green-500">18ms</span>
             </div>
             <div className="flex justify-between items-center text-[10px] font-sans font-bold uppercase tracking-widest">
-              <span className="text-white/40">Handshake Speed</span>
+              <span className="text-white/40">Platform cost</span>
               <span>Rs. 0 Cost</span>
             </div>
             <div className="flex justify-between items-center text-[10px] font-sans font-bold uppercase tracking-widest">
-              <span className="text-white/40">Encryption</span>
-              <span>Quantum-PK</span>
+              <span className="text-white/40">Security</span>
+              <span>Enterprise-grade</span>
             </div>
           </div>
         </div>
 
         <div className="p-8 bg-accent flex flex-col justify-between">
-           <h4 className="text-[10px] font-sans font-black uppercase tracking-widest text-white mb-6">Pakistan Workflow</h4>
-           <p className="text-3xl font-black italic uppercase tracking-tighter text-white mb-8">{stats.apps} Applications in system.</p>
-           <button className="w-full bg-white text-accent py-4 font-sans font-black uppercase text-[10px] tracking-widest hover:bg-dark hover:text-white transition-all shadow-xl">
-             Review Sequence
+           <h4 className="text-[10px] font-sans font-black tracking-widest text-white mb-6">Quick actions</h4>
+           <p className="text-3xl font-black tracking-tighter text-white mb-8">{stats.apps} applications in system.</p>
+           <button className="w-full bg-white text-accent py-4 font-sans font-black text-[10px] tracking-widest hover:bg-dark hover:text-white transition-all shadow-xl">
+             Review applications
            </button>
         </div>
       </div>

@@ -109,11 +109,11 @@ const Contact = () => {
               <div className="space-y-4">
                 <a href="mailto:press@spotlight.fashion" className="flex items-center group text-xl md:text-2xl font-bold uppercase hover:text-accent transition-colors">
                   <Mail className="mr-4 text-white/20 group-hover:text-accent" />
-                  press@spotlight.fashion
+                 press@adorzia.com
                 </a>
                 <a href="mailto:partnerships@spotlight.fashion" className="flex items-center group text-xl md:text-2xl font-bold uppercase hover:text-accent transition-colors">
                   <Mail className="mr-4 text-white/20 group-hover:text-accent" />
-                  partners@spotlight.fashion
+                 partners@adorzia.com
                 </a>
               </div>
             </div>
@@ -121,14 +121,18 @@ const Contact = () => {
             <div>
               <h4 className="text-accent font-sans font-bold uppercase tracking-widest text-sm mb-6">Social Echo</h4>
               <div className="flex gap-8">
-                <a href="#" className="p-4 bg-white/5 border border-white/10 hover:border-accent hover:text-accent transition-all">
+                <a href="https://instagram.com/adorziaofficial" className="p-4 bg-white/5 border border-white/10 hover:border-accent hover:text-accent transition-all">
                   <Instagram size={32} />
                 </a>
-                <a href="#" className="p-4 bg-white/5 border border-white/10 hover:border-accent hover:text-accent transition-all">
+                <a href="https://linkedin.com/company/adorzia" className="p-4 bg-white/5 border border-white/10 hover:border-accent hover:text-accent transition-all">
                   <Linkedin size={32} />
                 </a>
-                <a href="#" className="p-4 bg-white/5 border border-white/10 hover:border-accent hover:text-accent transition-all">
-                  <MessageSquare size={32} />
+<a
+    href="https://wa.me/923059064253"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="p-4 bg-white/5 border border-white/10 hover:border-accent hover:text-accent transition-all"
+  >                  <MessageSquare size={32} />
                 </a>
               </div>
             </div>
@@ -329,14 +333,13 @@ const Contact = () => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between border-t border-white/10 pt-20 gap-12">
           <div className="text-center md:text-left">
             <h5 className="font-sans font-black uppercase text-accent mb-2">Pakistan Operations</h5>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-sans font-black tracking-tighter uppercase leading-[1] md:leading-[0.8]">LAHORE <span className="text-white/20 italic">HQ</span></h2>
-            <p className="text-white/40 font-serif text-base sm:text-lg mt-4 italic">Gulberg III, Main Boulevard, Lahore 54000</p>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-sans font-black tracking-tighter uppercase leading-[1] md:leading-[0.8]">KARACHI → LAHORE <span className="text-white/20 italic"></span></h2>
+            <p className="text-white/40 font-serif text-base sm:text-lg mt-4 italic">Fall 2026 Showcase hosted in Lahore.</p>
           </div>
           <div className="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-4 md:gap-x-12 opacity-20 hover:opacity-100 transition-opacity">
-            <span className="text-2xl sm:text-4xl font-black italic select-none text-accent">ISLAMABAD</span>
+            <span className="text-2xl sm:text-4xl font-black italic select-none text-accent">LAHORE</span>
             <span className="text-2xl sm:text-4xl font-black italic select-none">KARACHI</span>
-            <span className="text-2xl sm:text-4xl font-black italic select-none">FAISALABAD</span>
-            <span className="text-2xl sm:text-4xl font-black italic select-none">MULTAN</span>
+           
           </div>
         </div>
       </section>

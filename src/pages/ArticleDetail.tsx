@@ -126,7 +126,7 @@ const ArticleDetail = () => {
               transition={{ delay: 0.3 }}
               className="mb-16 aspect-[21/9] bg-white/5 grayscale overflow-hidden"
             >
-              <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
+              <img src={article.image} alt={article.title} className="w-full h-full object-cover" loading="lazy" />
             </motion.div>
 
             {/* Article Body */}
@@ -183,7 +183,7 @@ const ArticleDetail = () => {
                   {relatedArticles.slice(0, 3).map((item) => (
                     <Link key={item.id} to={`/blog/${item.id}`} className="group flex gap-4 items-start">
                       <div className="w-20 aspect-square overflow-hidden grayscale group-hover:grayscale-0 transition-all shrink-0 bg-white/5 border border-white/5">
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
                       </div>
                       <div>
                         <span className="text-[8px] font-sans font-black text-accent uppercase tracking-widest mb-1 block">{item.category}</span>
@@ -269,7 +269,7 @@ const ArticleDetail = () => {
             {relatedArticles.length > 0 ? relatedArticles.map((item) => (
               <Link key={item.id} to={`/blog/${item.id}`} className="group block">
                 <div className="aspect-[16/10] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 mb-6 bg-white/5">
-                  <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                  <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" loading="lazy" />
                 </div>
                 <span className="text-[9px] font-sans font-black text-accent uppercase tracking-widest mb-3 block">{item.category}</span>
                 <h3 className="text-xl font-black uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">
@@ -279,7 +279,7 @@ const ArticleDetail = () => {
             )) : articles.slice(0, 3).map((item) => (
               <Link key={item.id} to={`/blog/${item.id}`} className="group block">
                 <div className="aspect-[16/10] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 mb-6 bg-white/5">
-                  <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                  <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" loading="lazy" />
                 </div>
                 <span className="text-[9px] font-sans font-black text-accent uppercase tracking-widest mb-3 block">{item.category}</span>
                 <h3 className="text-xl font-black uppercase tracking-tight leading-tight group-hover:text-accent transition-colors">

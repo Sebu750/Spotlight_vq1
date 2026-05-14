@@ -117,8 +117,8 @@ const Applications = () => {
     <div className="space-y-12">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <h2 className="text-[10px] font-sans font-black uppercase tracking-[0.5em] text-accent mb-2">Personnel Review • Pakistan Branch</h2>
-          <h1 className="text-5xl font-black uppercase tracking-tighter italic">Designer Pool.</h1>
+          <h2 className="text-[10px] font-sans font-black tracking-[0.5em] text-accent mb-2">Designer applications</h2>
+          <h1 className="text-5xl font-black tracking-tighter">Applications</h1>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <select 
@@ -126,7 +126,7 @@ const Applications = () => {
             onChange={(e) => setRegionFilter(e.target.value)}
             className="bg-white/5 border border-white/10 px-4 py-4 font-sans text-[10px] tracking-widest uppercase font-bold outline-none focus:border-accent transition-all text-white"
           >
-            <option value="ALL">ALL PROVINCES</option>
+            <option value="ALL">All provinces</option>
             {PAKISTAN_PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
           <div className="relative flex-1 md:w-80">
@@ -135,7 +135,7 @@ const Applications = () => {
               type="text" 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="SEARCH BY NAME OR TRACK..." 
+              placeholder="Search by name or category..." 
               className="w-full bg-white/5 border border-white/10 pl-12 pr-4 py-4 font-sans text-[10px] tracking-widest uppercase font-bold outline-none focus:border-accent transition-all text-white"
             />
           </div>
@@ -149,18 +149,18 @@ const Applications = () => {
                 <Loader2 className="text-accent animate-spin" size={40} />
                 <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full"></div>
              </div>
-             <span className="text-[10px] font-sans font-black uppercase tracking-[0.3em] text-white/40">Intercepting Stream...</span>
+             <span className="text-[10px] font-sans font-black tracking-[0.3em] text-white/40">Loading data...</span>
           </div>
         ) : error ? (
           <div className="py-32 flex flex-col items-center justify-center text-center px-6">
             <AlertCircle className="text-red-500 mb-4" size={40} />
-            <h3 className="text-xl font-black uppercase tracking-tighter mb-2">Protocol Error</h3>
+            <h3 className="text-xl font-black tracking-tighter mb-2">Connection error</h3>
             <p className="text-white/60 font-serif italic max-w-sm">{error}</p>
             <button 
               onClick={() => window.location.reload()}
               className="mt-8 text-accent font-sans font-black uppercase text-[10px] tracking-widest hover:underline"
             >
-              Retry Connection
+              Retry
             </button>
           </div>
         ) : filteredData.length === 0 ? (
@@ -168,18 +168,18 @@ const Applications = () => {
             <div className="w-16 h-16 border border-white/5 rounded-full flex items-center justify-center mb-6">
               <Clock size={32} />
             </div>
-            <p className="font-sans font-black uppercase tracking-widest text-[10px]">No transmissions keyed to this signature.</p>
+            <p className="font-sans font-black tracking-widest text-[10px]">No applications found.</p>
           </div>
         ) : (
           <div className="overflow-x-auto min-h-[500px]">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/10 bg-white/[0.02]">
-                  <th className="px-8 py-6 text-[10px] font-sans font-black uppercase tracking-widest text-white/40">Identity</th>
-                  <th className="px-8 py-6 text-[10px] font-sans font-black uppercase tracking-widest text-white/40">Contact / Track</th>
-                  <th className="px-8 py-6 text-[10px] font-sans font-black uppercase tracking-widest text-white/40">Timestamp</th>
-                  <th className="px-8 py-6 text-[10px] font-sans font-black uppercase tracking-widest text-white/40">Status</th>
-                  <th className="px-8 py-6 text-[10px] font-sans font-black uppercase tracking-widest text-white/40 text-right">Operations</th>
+                  <th className="px-8 py-6 text-[10px] font-sans font-black tracking-widest text-white/40">Name</th>
+                  <th className="px-8 py-6 text-[10px] font-sans font-black tracking-widest text-white/40">Contact info</th>
+                  <th className="px-8 py-6 text-[10px] font-sans font-black tracking-widest text-white/40">Submitted</th>
+                  <th className="px-8 py-6 text-[10px] font-sans font-black tracking-widest text-white/40">Status</th>
+                  <th className="px-8 py-6 text-[10px] font-sans font-black tracking-widest text-white/40 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">
@@ -271,16 +271,16 @@ const Applications = () => {
       <div className="flex justify-between items-center bg-[#111] p-6 border border-white/10">
          <div className="flex gap-12">
             <div>
-               <span className="block text-[8px] font-sans font-bold text-white/40 uppercase tracking-widest mb-1">Authenticated</span>
-               <span className="text-xl font-black uppercase italic tracking-tighter">{data.length} Transmissions</span>
+               <span className="block text-[8px] font-sans font-bold text-white/40 tracking-widest mb-1">Total</span>
+               <span className="text-xl font-black tracking-tighter">{data.length} applications</span>
             </div>
             <div>
-               <span className="block text-[8px] font-sans font-bold text-white/40 uppercase tracking-widest mb-1">Action Rate</span>
-               <span className="text-xl font-black uppercase italic tracking-tighter">100% Signal</span>
+               <span className="block text-[8px] font-sans font-bold text-white/40 tracking-widest mb-1">Response rate</span>
+               <span className="text-xl font-black tracking-tighter">100%</span>
             </div>
          </div>
-         <button className="bg-white text-dark px-10 py-4 font-sans font-black uppercase tracking-widest text-[10px] hover:bg-accent hover:text-white transition-all shadow-2xl flex items-center gap-3">
-           <Download size={14} /> Batch Export Archive
+         <button className="bg-white text-dark px-10 py-4 font-sans font-black tracking-widest text-[10px] hover:bg-accent hover:text-white transition-all shadow-2xl flex items-center gap-3">
+           <Download size={14} /> Export data
          </button>
       </div>
 
@@ -299,7 +299,7 @@ const Applications = () => {
               <X size={24} />
             </button>
 
-            <h2 className="text-4xl font-black uppercase tracking-tighter mb-8 leading-none">APPLICATION <br /><span className="text-accent italic">DETAILS</span></h2>
+            <h2 className="text-4xl font-black tracking-tighter mb-8 leading-none">Application <br /><span className="text-accent">details</span></h2>
             
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-6">
@@ -365,15 +365,15 @@ const Applications = () => {
               <div className="flex gap-4 pt-6 border-t border-white/10">
                 <button 
                   onClick={() => { updateStatus(selectedApp.id, 'accepted'); setSelectedApp({...selectedApp, status: 'accepted'}); }}
-                  className="flex-1 bg-green-500/10 text-green-500 border border-green-500/20 py-4 font-sans font-black uppercase tracking-widest text-[10px] hover:bg-green-500 hover:text-white transition-all"
+                  className="flex-1 bg-green-500/10 text-green-500 border border-green-500/20 py-4 font-sans font-black tracking-widest text-[10px] hover:bg-green-500 hover:text-white transition-all"
                 >
-                  <CheckCircle2 size={14} className="inline mr-2" /> Authorize
+                  <CheckCircle2 size={14} className="inline mr-2" /> Approve
                 </button>
                 <button 
                   onClick={() => { updateStatus(selectedApp.id, 'rejected'); setSelectedApp({...selectedApp, status: 'rejected'}); }}
-                  className="flex-1 bg-red-500/10 text-red-500 border border-red-500/20 py-4 font-sans font-black uppercase tracking-widest text-[10px] hover:bg-red-500 hover:text-white transition-all"
+                  className="flex-1 bg-red-500/10 text-red-500 border border-red-500/20 py-4 font-sans font-black tracking-widest text-[10px] hover:bg-red-500 hover:text-white transition-all"
                 >
-                  <XCircle size={14} className="inline mr-2" /> Decline
+                  <XCircle size={14} className="inline mr-2" /> Reject
                 </button>
               </div>
             </div>
