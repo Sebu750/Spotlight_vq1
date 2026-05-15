@@ -36,7 +36,7 @@ const About = () => {
       <section className="py-32 px-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
         <div className="aspect-[4/5] bg-white/5 border border-white/10 overflow-hidden grayscale">
           <img 
-            src={founder} 
+            src={team1} 
             alt="founder" 
             loading="lazy"
             className="w-full h-full object-cover"
