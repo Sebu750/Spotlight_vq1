@@ -161,9 +161,12 @@ const Footer = () => {
     </div>
     <div className="max-w-7xl mx-auto border-t border-white/5 mt-20 pt-10 flex flex-col md:flex-row items-center justify-between text-white/30 text-xs tracking-widest uppercase gap-6">
       <p className="text-center md:text-left">© 2026 Spotlight Global. All rights reserved.</p>
-      <div className="flex space-x-6">
+      <div className="flex space-x-6 items-center">
         <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
         <a href="#" className="hover:text-white transition-colors">Terms of Entry</a>
+        <Link to="/admin" className="ml-4 px-4 py-2 border border-white/20 text-white/40 hover:text-white hover:border-accent hover:text-accent transition-all">
+          ...
+        </Link>
       </div>
     </div>
   </footer>

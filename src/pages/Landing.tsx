@@ -464,7 +464,7 @@ const Landing = () => {
     step: "03", 
     title: "The Spotlight", 
     subtitle: "Live Finale | Sept 14", 
-    desc: "The Top 10 designers showcase their vision on the Karachi runway. The winner is decided by key industry stakeholders, influencers, and the public." 
+    desc: "The Top 10 designers showcase their vision on the Lahore runway. The winner is decided by key industry stakeholders, influencers, and the public." 
   },
   { 
     step: "04", 
@@ -633,53 +633,67 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Past Winners */}
-      <section className="py-32 px-6 max-w-7xl mx-auto">
-        <h2 className="text-4xl md:text-6xl font-black mb-20">Founding Team <span className="text-accent">—</span></h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {[
-            { 
-              name: "TBD", 
-              year: "Creative Director", 
-              impact: "Curating the fusion of Eastern artistry and Western silhouette",
-              quote: "Our mission is to translate traditional heritage into a modern, industrial language that resonates on a global stage.",
-              image: winner1
-            },
-            { 
-              name: "TBD", 
-              year: "Operations & Logistics Lead", 
-              impact: "Streamlining end-to-end production for the managed marketplace",
-              quote: "By handling the complex logistics of manufacturing, we empower designers to focus entirely on their creative evolution.",
-              image: winner2
-            },
-            { 
-              name: "TBD", 
-              year: "Director of Brand Growth", 
-              impact: "Elevating local narratives into premium global brand identities",
-              quote: "Our goal is to ensure every designer we touch doesn't just launch a collection, but builds a legacy that commands international respect.",
-              image: winner3
-            }
-          ].map((winner, idx) => (
-            <div key={idx} className="group">
-              <div className="aspect-[3/4] overflow-hidden mb-8 relative">
-                <img 
-                  src={winner.image} 
-                  alt={winner.name} 
-                  loading="lazy"
-                  className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
-                />
-                <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-all"></div>
-              </div>
-              <h4 className="text-2xl font-black uppercase mb-1">{winner.name}</h4>
-              <p className="text-accent font-sans font-bold text-sm tracking-widest mb-4">{winner.year}</p>
-              <p className="text-white/80 italic mb-6">"{winner.quote}"</p>
-              <div className="text-white/40 font-sans text-xs uppercase tracking-widest border-t border-white/10 pt-4">
-                Mandate: {winner.impact}
-              </div>
-            </div>
-          ))}
+  
+{/* Jury Members */}
+<section className="py-32 px-6 max-w-7xl mx-auto">
+  <h2 className="text-4xl md:text-6xl font-black mb-8">
+    Jury Members <span className="text-accent">—</span>
+  </h2>
+
+  <p className="text-white/60 text-lg max-w-3xl mb-20 leading-relaxed">
+    The inaugural ADORZIA Spotlight jury panel will be announced soon. 
+    The selection committee will include leaders across fashion, retail, 
+    production, branding, and creative direction from Pakistan’s evolving fashion industry.
+  </p>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+    {[
+      {
+        title: "Creative Direction",
+        desc: "Industry voices shaping the future of design, storytelling, and fashion identity.",
+        image: winner3
+      },
+      {
+        title: "Business & Retail",
+        desc: "Professionals experienced in scaling brands, distribution, and market positioning.",
+        image: winner2
+      },
+      {
+        title: "Production & Craft",
+        desc: "Experts focused on manufacturing, textile innovation, and artisanal excellence.",
+        image: winner1 
+      }
+    ].map((item, idx) => (
+      <div key={idx} className="group">
+        <div className="aspect-[3/4] overflow-hidden mb-8 relative">
+          <img
+            src={item.image}
+            alt={item.title}
+            loading="lazy"
+            className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
+          />
+
+          <div className="absolute inset-0 bg-black/40" />
+
+          <div className="absolute bottom-0 left-0 right-0 p-8">
+            <p className="text-accent text-xs uppercase tracking-[0.3em] font-bold mb-3">
+              Coming Soon
+            </p>
+
+            <h4 className="text-2xl font-black uppercase mb-3">
+              {item.title}
+            </h4>
+
+            <p className="text-white/70 text-sm leading-relaxed">
+              {item.desc}
+            </p>
+          </div>
         </div>
-      </section>
+      </div>
+    ))}
+  </div>
+</section>
+
 
       {/* Deadlines / Timeline */}
       <section className="py-40 px-6 bg-white text-dark relative overflow-hidden">
